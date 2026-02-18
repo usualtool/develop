@@ -58,6 +58,7 @@ if($do=="install"){
 			      UTInc::MakeDir($assets_dir);
 		    endif;
 		    UTInc::MoveDir(APP_ROOT."/plugins/".$pid."/assets",$assets_dir);
+				UTInc::DelDir(APP_ROOT."/plugins/".$pid."/assets");
     endif;
     $pconfig=APP_ROOT."/plugins/".$pid."/usualtool.config";
     $plugins=file_get_contents($pconfig);

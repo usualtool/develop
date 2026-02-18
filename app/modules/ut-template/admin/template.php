@@ -61,6 +61,7 @@ if($do=="install"){
 			      UTInc::MakeDir($assets_dir);
 		    endif;
 		    UTInc::MoveDir(APP_ROOT."/template/".$tid."/assets",$assets_dir);
+				UTInc::DelDir(APP_ROOT."/template/".$tid."/assets");
     endif;
     $id=UTInc::StrSubstr("<id>","</id>",$template);
     $type=UTInc::StrSubstr("<type>","</type>",$template);
@@ -89,7 +90,9 @@ if($do=="uninstall"){
     $tid=str_replace(".","",UTInc::SqlCheck($_GET["tid"]));
     if(UTData::DelData("cms_template","tid='$tid'")){
         UTInc::DelDir(APP_ROOT."/template/".$tid);
-        UTInc::DelDir(OPEN_ROOT."/assets/template/".$tid);
+		    if(is_dir(OPEN_ROOT."/assets/template/".$tid)):
+            UTInc::DelDir(OPEN_ROOT."/assets/template/".$tid);
+				endif;
         UTInc::GoUrl("?m=ut-template&p=template","模板删除成功!");
     }else{
         UTInc::GoUrl("-1","模板删除失败!");

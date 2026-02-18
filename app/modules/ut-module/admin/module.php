@@ -50,6 +50,7 @@ if($do=="install"){
 			      UTInc::MakeDir($assets_dir);
 		    endif;
 		    UTInc::MoveDir(APP_ROOT."/modules/".$mid."/assets",$assets_dir);
+				UTInc::DelDir(APP_ROOT."/modules/".$mid."/assets");
     endif;
     $modconfig=APP_ROOT."/modules/".$mid."/usualtool.config";
     $mods=file_get_contents($modconfig);
