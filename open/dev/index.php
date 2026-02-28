@@ -33,16 +33,16 @@ else:
     $app->Runin("message", explode("|", $msgdata["message"]));
 endif;
 /**
- * 写入底层模块
+ * 底层模块
  * 除开UT-FRAME公共模块
  */
 $app->Runin("modules",UTData::QueryData("cms_module","","bid=3 and mid<>'".$config["DEFAULT_MOD"]."'","","")["querydata"]);
 /**
- * 写入自定义模块
+ * 自定义模块
  */
 $app->Runin("custmods",UTData::QueryData("cms_module","","bid<>3")["querydata"]);
 /**
- * 写入当前运行模块名称及栏目
+ * 当前运行模块及栏目
  * befoitem前端地址集，backtem后端栏目集
  */
 $thismod=UTData::QueryData("cms_module","","mid='$m'","","")["querydata"][0];
