@@ -25,5 +25,5 @@ if($do=="setup"){
     $info = preg_replace("/LANG=(.*)/","LANG={$lang_default}",$info);
     $info = preg_replace("/LANG_OPTION=(.*)/","LANG_OPTION={$lang_option}",$info);
     file_put_contents(UTF_ROOT."/.ut.config",$info);
-		UTInc::GoUrl("?m=ut-system&p=lang","保存配置成功!");
+    UTInc::GoUrl("?m=ut-system&p=lang","保存配置成功!");
 }

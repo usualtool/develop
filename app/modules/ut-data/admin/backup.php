@@ -114,12 +114,12 @@ if($do=="sql-rev"){
  * SQL文件删除
  */
 if($do=="sql-del"){
-	$sql=str_replace("..","",$_GET['sql']);
+    $sql=str_replace("..","",$_GET['sql']);
     $sqlbak=UTF_ROOT."/log/sql/".$sql;
         if(file_exists($sqlbak)):
-			UTInc::UnlinkFile($sqlbak);
-			UTInc::GoUrl("?m=ut-data&p=backup","SQL文件删除成功!");
-		else:
-			UTInc::GoUrl("-1","SQL文件删除失败!");
-		endif;
+            UTInc::UnlinkFile($sqlbak);
+            UTInc::GoUrl("?m=ut-data&p=backup","SQL文件删除成功!");
+        else:
+            UTInc::GoUrl("-1","SQL文件删除失败!");
+        endif;
 }

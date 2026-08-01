@@ -40,12 +40,12 @@ if($do=="add"){
             "salts"=>$salts,
             "avatar"=>UTInc::SqlCheck($_POST["avatar"]),
             "addtime"=>date('Y-m-d H:i:s',time())))):
-			UTInc::GoUrl("?m=ut-power","创建成功!");
+            UTInc::GoUrl("?m=ut-power","创建成功!");
         else:
-			UTInc::GoUrl("-1","创建失败!");
+            UTInc::GoUrl("-1","创建失败!");
         endif;
     else:
-		UTInc::GoUrl("-1","两次密码不一致!");
+        UTInc::GoUrl("-1","两次密码不一致!");
     endif;
 }
 if($do=="mon"){
@@ -61,23 +61,23 @@ if($do=="mon"){
             "password"=>$passwordx,
             "salts"=>$salts,
             "avatar"=>UTInc::SqlCheck($_POST["avatar"])),"id='$id'")):
-			UTInc::GoUrl("?m=ut-power","编辑成功!");
+            UTInc::GoUrl("?m=ut-power","编辑成功!");
         else:
-			UTInc::GoUrl("-1","编辑失败!");
+            UTInc::GoUrl("-1","编辑失败!");
         endif;
     else:
-		UTInc::GoUrl("-1","两次密码不一致!");
+        UTInc::GoUrl("-1","两次密码不一致!");
     endif;
 }
 if($do=="del"){
     $adminnum=UTData::QueryData("cms_admin","","","","","0")["querynum"];
     if($adminnum==1):
-		UTInc::GoUrl("-1","删除失败,已经是最后一条记录!");
+        UTInc::GoUrl("-1","删除失败,已经是最后一条记录!");
     else:
         if(UTData::DelData("cms_admin","id='$id'")):
-		    UTInc::GoUrl("?m=ut-power","删除成功!");
+            UTInc::GoUrl("?m=ut-power","删除成功!");
         else:
-			UTInc::GoUrl("-1","删除失败!");
+            UTInc::GoUrl("-1","删除失败!");
         endif;
     endif;
 }

@@ -46,19 +46,19 @@ if($do=="install"){
                 $zip->close();
                 unlink(APP_ROOT."/plugins/".$filename);
             else:
-							 UTInc::GoUrl("-1","plugins目录775权限不足!");
+                UTInc::GoUrl("-1","plugins目录775权限不足!");
             endif;
         else:
-						UTInc::GoUrl("-1","安装权限不足!");
+            UTInc::GoUrl("-1","安装权限不足!");
         endif;
     endif;
     if(is_dir(APP_ROOT."/plugins/".$pid."/assets")):
-		    $assets_dir=OPEN_ROOT."/assets/plugins/".$pid;
+        $assets_dir=OPEN_ROOT."/assets/plugins/".$pid;
         if(!is_dir($assets_dir)):
-			      UTInc::MakeDir($assets_dir);
-		    endif;
-		    UTInc::MoveDir(APP_ROOT."/plugins/".$pid."/assets",$assets_dir);
-				UTInc::DelDir(APP_ROOT."/plugins/".$pid."/assets");
+            UTInc::MakeDir($assets_dir);
+        endif;
+        UTInc::MoveDir(APP_ROOT."/plugins/".$pid."/assets",$assets_dir);
+        UTInc::DelDir(APP_ROOT."/plugins/".$pid."/assets");
     endif;
     $pconfig=APP_ROOT."/plugins/".$pid."/usualtool.config";
     $plugins=file_get_contents($pconfig);
@@ -85,7 +85,7 @@ if($do=="install"){
             "description"=>$description));
     endif;
     if($installsql=='0'):
-				UTInc::GoUrl("?m=ut-plugin&p=plugin","成功安装插件!");
+        UTInc::GoUrl("?m=ut-plugin&p=plugin","成功安装插件!");
     else:
         if(UTData::RunSql($installsql)):
             UTInc::GoUrl("?m=ut-plugin&p=plugin","成功安装插件!");
