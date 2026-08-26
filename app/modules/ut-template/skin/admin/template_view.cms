@@ -30,7 +30,7 @@
                 <div class="card">
                     <div class="card-body">
                     <form action="?m=ut-template&p=template_view&do=save" method="post">
-                       <input type="hidden" name="filename" value="<{$d}>">
+                       <input type="hidden" name="d" value="<{$d}>">
                        <{if is_file($file)}>
                            <div class="mb-2"><{$d}></div>
                            <textarea class="form-control" name="content" rows="15"><{$html}></textarea>
