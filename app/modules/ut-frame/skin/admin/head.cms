@@ -146,7 +146,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>                        
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -188,112 +188,135 @@
                     </div>
                     <ul class="nav">
                         <li class="nav-item <{php=>if($_COOKIE["Nav"]=="ut-frame"):echo"active";endif;}>">
-                            <a href="./" onclick="clicknav('ut-frame')">
+                            <a href="<{$develop}>/" onclick="clicknav('ut-frame')">
                                 <i class="fas fa-home"></i>
                                 <p>首页</p>
                             </a>
                         </li>
+                        <{php=>
+                            if(!empty($_COOKIE["Nav"]) && $_COOKIE["Nav"]!="ut-frame"):
+                                $this_nav=$_COOKIE["Nav"];
+                                $this_nav_data=library\UsualToolData\UTData::QueryData("cms_module","","mid='$this_nav'")["querydata"][0];
+                                echo"<li class=\"nav-item\" style=\"border:1px dashed #eee;width:90%;margin:auto;\">";
+                                    echo"<a class=\"text-danger border-bottom bg-light\"><span class=\"text-dark mr-2\">当前</span>".$this_nav_data["modname"]."<span class=\"fas fa-eraser
+                             text-dark ml-auto\" title=\"清除\" onclick=\"clearnav()\"></span></a>";
+                                if(!empty($this_nav_data["backitem"])):
+                                                echo"<ul class=\"nav nav-collapse\" style=\"padding-bottom:0px;padding-top:0px;margin-bottom:0px\">\r\n";
+                                                    $this_backitem=explode(',',$this_nav_data["backitem"]);
+                                                    for($j=0;$j<count($this_backitem);$j++):
+                                                        $this_sm_nav=explode(':',$this_backitem[$j]);
+                                                        echo"<li>\r\n";
+                                                            echo"<a href='?m=".$this_nav_data["mid"]."&p=".$this_sm_nav[1]."' onclick=\"clicknav('".$this_nav_data["mid"]."')\" style=\"padding:5px 25px !important;\">\r\n";
+                                                                echo"<span class=\"sub-item\">".$this_sm_nav[0]."</span>\r\n";
+                                                            echo"</a>\r\n";
+                                                        echo"</li>\r\n";
+                                                    endfor;
+                                                echo"</ul>\r\n";
+                                        endif;
+                                echo"</li>";
+                            endif;
+                        }>
                         <{if !empty($custmods)}>
-                        <!--自定义模块-->
-                        <li class="nav-section">
-                            <h4 class="text-section">自定义模块</h4>
-                        </li>
-                        <{loop=>$custmods as $rows}>    
-                        <{if empty($rows["backitem"])}>        
-                        <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
-                        <a href="?m=<{$rows->mid}>" onclick="clicknav('<{$rows->mid}>')">
-                                <i class="fas fa-sort"></i>
-                                <p><{$rows->modname}></p>
-                        </a>
-                        </li>
-                        <{else}>    
-                        <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"submenu";endif;}>">
-                            <a data-toggle="collapse" href="#<{$rows->mid}>">
-                                <i class="fas fa-sort"></i>
-                                <p><{$rows->modname}></p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
-                                <ul class="nav nav-collapse">
-                                <{php=>
-                                $navs=explode(",",return=>$rows->backitem);
-                                for($k=0;$k<count($navs);$k++):
-                                $navtitle=explode(":",$navs[$k])[0];
-                                $navurl=explode(":",$navs[$k])[1];
-                                }>
-                                    <li>
-                                        <a href="?m=<{$rows->mid}>&p=<{php=>echo$navurl}>" onclick="clicknav('<{$rows->mid}>')">
-                                            <span class="sub-item"><{php=>echo$navtitle}></span>
+                            <!--自定义模块-->
+                            <li class="nav-section">
+                                <h4 class="text-section">自定义模块</h4>
+                            </li>
+                            <{loop=>$custmods as $rows}>
+                                <{if empty($rows["backitem"])}>
+                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
+                                        <a href="?m=<{$rows->mid}>" onclick="clicknav('<{$rows->mid}>')">
+                                                <i class="fas fa-sort"></i>
+                                                <p><{$rows->modname}></p>
                                         </a>
                                     </li>
-                                <{php=>endfor;}>
-                                </ul>
-                            </div>
-                        </li>
-                        <{/if}>
-                        <{/loop}>
-                        <{/if}>
-                        <!--底层模块-->     
-                        <{if $develop==1}>
-                        <li class="nav-section">
-                            <h4 class="text-section">底层模块</h4>
-                        </li>
-                        <{loop=>$modules as $rows}>    
-                        <{if empty($rows["backitem"])}>        
-                        <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
-                        <a href="?m=<{$rows->mid}>" onclick="clicknav('<{$rows->mid}>')">
-                            <{if $rows["mid"]=="ut-cac"}>
-                                <i class="fas fa-chalkboard"></i>
-                            <{else}>
-                                <i class="fas fa-th-large"></i>
-                            <{/if}>
-                            <p><{$rows->modname}></p>
-                        </a>
-                        </li>
-                        <{else}>    
-                        <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"submenu";endif;}>">
-                            <a data-toggle="collapse" href="#<{$rows->mid}>">
-                                <{if $rows["mid"]=="ut-module"}>
-                                <i class="fa fa-cubes"></i>
-                                <{else if $rows["mid"]=="ut-plugin"}>
-                                <i class="fa fa-plug"></i>
-                                <{else if $rows["mid"]=="ut-template"}>
-                                <i class="fas fa-layer-group"></i>
-                                <{else if $rows["mid"]=="ut-system"}>
-                                <i class="fa fa-cogs"></i>
-                                <{else if $rows["mid"]=="ut-data"}>
-                                <i class="fa fa-database"></i>
-                                <{else if $rows["mid"]=="ut-oauth"}>
-                                <i class="fa fa-hands-helping"></i>
-                                <{else if $rows["mid"]=="ut-api"}>
-                                <i class="fa fa-code-branch"></i>
-                                <{else if $rows["mid"]=="ut-power"}>
-                                <i class="fas fa-user-secret"></i>
                                 <{else}>
-                                <i class="fas fa-th-large"></i>
+                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"submenu";endif;}>">
+                                        <a data-toggle="collapse" href="#<{$rows->mid}>">
+                                            <i class="fas fa-sort"></i>
+                                            <p><{$rows->modname}></p>
+                                            <span class="caret"></span>
+                                        </a>
+                                        <div class="collapse <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
+                                            <ul class="nav nav-collapse">
+                                            <{php=>
+                                            $navs=explode(",",return=>$rows->backitem);
+                                            for($k=0;$k<count($navs);$k++):
+                                            $navtitle=explode(":",$navs[$k])[0];
+                                            $navurl=explode(":",$navs[$k])[1];
+                                            }>
+                                                <li>
+                                                    <a href="?m=<{$rows->mid}>&p=<{php=>echo$navurl}>" onclick="clicknav('<{$rows->mid}>')">
+                                                        <span class="sub-item"><{php=>echo$navtitle}></span>
+                                                    </a>
+                                                </li>
+                                            <{php=>endfor;}>
+                                            </ul>
+                                        </div>
+                                    </li>
                                 <{/if}>
-                                <p><{$rows->modname}></p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
-                                <ul class="nav nav-collapse">
-                                <{php=>
-                                $navs=explode(",",return=>$rows->backitem);
-                                for($k=0;$k<count($navs);$k++):
-                                $navtitle=explode(":",$navs[$k])[0];
-                                $navurl=explode(":",$navs[$k])[1];
-                                }>
-                                    <li>
-                                        <a href="?m=<{$rows->mid}>&p=<{php=>echo$navurl}>" onclick="clicknav('<{$rows->mid}>')">
-                                            <span class="sub-item"><{php=>echo$navtitle}></span>
+                            <{/loop}>
+                        <{/if}>
+                        <!--底层模块-->
+                        <{if $develop_open==1}>
+                            <li class="nav-section">
+                                <h4 class="text-section">底层模块</h4>
+                            </li>
+                            <{loop=>$modules as $rows}>
+                                <{if empty($rows["backitem"])}>
+                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
+                                        <a href="?m=<{$rows->mid}>" onclick="clicknav('<{$rows->mid}>')">
+                                            <{if $rows["mid"]=="ut-cac"}>
+                                                <i class="fas fa-chalkboard"></i>
+                                            <{else}>
+                                                <i class="fas fa-th-large"></i>
+                                            <{/if}>
+                                            <p><{$rows->modname}></p>
                                         </a>
                                     </li>
-                                <{php=>endfor;}>
-                                </ul>
-                            </div>
-                        </li>
-                        <{/if}>
-                        <{/loop}>
+                                <{else}>    
+                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"submenu";endif;}>">
+                                        <a data-toggle="collapse" href="#<{$rows->mid}>">
+                                            <{if $rows["mid"]=="ut-module"}>
+                                                <i class="fa fa-cubes"></i>
+                                            <{else if $rows["mid"]=="ut-plugin"}>
+                                                <i class="fa fa-plug"></i>
+                                            <{else if $rows["mid"]=="ut-template"}>
+                                                <i class="fas fa-layer-group"></i>
+                                            <{else if $rows["mid"]=="ut-system"}>
+                                                <i class="fa fa-cogs"></i>
+                                            <{else if $rows["mid"]=="ut-data"}>
+                                                <i class="fa fa-database"></i>
+                                            <{else if $rows["mid"]=="ut-oauth"}>
+                                                <i class="fa fa-hands-helping"></i>
+                                            <{else if $rows["mid"]=="ut-api"}>
+                                                <i class="fa fa-code-branch"></i>
+                                            <{else if $rows["mid"]=="ut-power"}>
+                                                <i class="fas fa-user-secret"></i>
+                                            <{else}>
+                                                <i class="fas fa-th-large"></i>
+                                            <{/if}>
+                                            <p><{$rows->modname}></p>
+                                            <span class="caret"></span>
+                                        </a>
+                                        <div class="collapse <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
+                                            <ul class="nav nav-collapse">
+                                            <{php=>
+                                            $navs=explode(",",return=>$rows->backitem);
+                                            for($k=0;$k<count($navs);$k++):
+                                            $navtitle=explode(":",$navs[$k])[0];
+                                            $navurl=explode(":",$navs[$k])[1];
+                                            }>
+                                                <li>
+                                                    <a href="?m=<{$rows->mid}>&p=<{php=>echo$navurl}>" onclick="clicknav('<{$rows->mid}>')">
+                                                        <span class="sub-item"><{php=>echo$navtitle}></span>
+                                                    </a>
+                                                </li>
+                                            <{php=>endfor;}>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                <{/if}>
+                            <{/loop}>
                         <{/if}>
                     </ul>
                 </div>
