@@ -33,6 +33,7 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">管理者</th>
+                                    <th scope="col">状态</th>
                                     <th scope="col">头像</th>
                                     <th scope="col">时间</th>
                                     <th scope="col">操作</th>
@@ -43,10 +44,22 @@
                                 <tr>
                                     <td><{$rows->id}></td>
                                     <td><{$rows->username}></td>
+                                    <td>
+                                    <{if $rows["state"]==0}>
+                                        <a href="?m=ut-power&do=update&id=<{$rows->id}>&state=1"><span class="text-success">正常</span></a>
+                                    <{else}>
+                                        <a href="?m=ut-power&do=update&id=<{$rows->id}>&state=0"><span class="text-danger">终止</span></a>
+                                    <{/if}>
+                                    </td>
                                     <td><div class="avatar avatar-xs"><img src="<{$rows->avatar}>" class="avatar-img rounded-circle"></div></td>
                                     <td><{$rows->addtime}></td>
                                     <td>
-                                    <a href="?m=ut-power&p=admin&id=<{$rows->id}>">编辑</a> | 
+                                    <{if $rows["state"]==0}>
+                                        <a href="?m=ut-power&p=admin&id=<{$rows->id}>">编辑</a>
+                                    <{else}>
+                                        编辑
+                                    <{/if}>
+                                    | 
                                     <a href="?m=ut-power&p=admin&id=<{$rows->id}>&do=del">删除</a>
                                     </td>
                                 </tr>
