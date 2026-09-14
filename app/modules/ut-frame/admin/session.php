@@ -45,7 +45,7 @@ if(isset($_SESSION['admin'])&&isset($_SESSION['admin_id'])&&!empty($_SESSION['ad
     $admin_id=$_SESSION['admin_id'];
     $admin_roleid=$_SESSION['admin_roleid'];
     $admin_avatar=$_SESSION['admin_avatar'];
-    $adminnum=UTData::QueryData("cms_admin","","id='$admin_id' and username='$admin'","","","0")["querynum"];
+    $adminnum=UTData::QueryData("cms_admin","","id='$admin_id' and username='$admin'")["querynum"];
     if($adminnum!==1):
         UTInc::GoUrl("?p=login");
     else:
