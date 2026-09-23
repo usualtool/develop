@@ -7,6 +7,7 @@
                 </div>
                 <div class="row">
                     <{loop=>$sysinfo $key->$val}>
+                    <{if $key=="OS" || $key=="SERVER" || $key=="PHP" || $key=="DISK_USED"}>
                     <div class="col-sm-6 col-md-3">
                         <div class="card card-stats card-round">
                             <div class="card-body ">
@@ -21,7 +22,7 @@
                                         <{elseif $key=="PHP"}>
                                         <div class="icon-big text-center icon-success bubble-shadow-small">
                                             <i class="fas fa-code"></i>
-                                        <{elseif $key=="MEMORY"}>
+                                        <{elseif $key=="DISK_USED"}>
                                         <div class="icon-big text-center icon-secondary bubble-shadow-small">
                                             <i class="far fa-chart-bar"></i>
                                         <{/if}>
@@ -37,6 +38,7 @@
                             </div>
                         </div>
                     </div>
+                    <{/if}>
                     <{/loop}>
                 </div>
                 <div class="row">
