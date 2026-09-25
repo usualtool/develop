@@ -42,7 +42,7 @@
                               </code>
                               前端：<br>
                               <code>
-                              use library\UsualToolData\UTData;<br>
+                              use usualtool\Lib\Data;<br>
                               print_r(UTData::SearchData("关键字"));<br>
                               </code>
                         </div>

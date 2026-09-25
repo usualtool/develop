@@ -54,7 +54,7 @@
                                                         <p class="card-category"><{$rows->isfree}></p>
                                                         <p class="card-category">
                                                         <{php=>
-                                                            if(library\UsualToolData\UTData::QueryData("cms_template","","tid='{return=>$rows->tid}'","","")["querynum"]>0):
+                                                            if(usualtool\Lib\Data::QueryData("cms_template","","tid='{return=>$rows->tid}'","","")["querynum"]>0):
                                                                 echo"已同步 | <a href='?m=ut-template&p=template&do=uninstall&tid={return=>$rows->tid}'>卸载</a>";
                                                             else:
                                                                 echo"<i class='fas fa-pen-nib'></i> <a style='color:green;' href='?m=ut-template&p=template&do=install&tid={return=>$rows->tid}&t=g'>同步模板</a>";
@@ -89,7 +89,7 @@
                                             <td><{$rows->title}></td>
                                             <td>
                                                 <{php=>
-                                                if(library\UsualToolData\UTData::QueryData("cms_template","","tid='{return=>$rows->tid}'","","")["querynum"]>0):
+                                                if(usualtool\Lib\Data::QueryData("cms_template","","tid='{return=>$rows->tid}'","","")["querynum"]>0):
                                                     echo"已同步 | <a href='?m=ut-template&p=template&do=uninstall&tid={return=>$rows->tid}'>卸载</a>";
                                                 else:
                                                      echo"<a href='?m=ut-template&p=template&do=install&tid={return=>$rows->tid}&t=b' class='text-blue'>同步</a>";
@@ -119,7 +119,7 @@
                                                         <p class="card-category"><{$rows->auther}></p>
                                                         <p class="card-category">
                                                         <{php=>
-                                                            if(library\UsualToolData\UTData::QueryData("cms_template","","tid='{return=>$rows->tid}'","","")["querynum"]>0):
+                                                            if(usualtool\Lib\Data::QueryData("cms_template","","tid='{return=>$rows->tid}'","","")["querynum"]>0):
                                                                 echo"已同步 | <a href='?m=ut-template&p=template&do=uninstall&tid={return=>$rows->tid}'>卸载</a>";
                                                             else:
                                                                 echo"<i class='fas fa-pen-nib'></i> <a style='color:green;' href='?m=ut-template&p=template&do=install&tid={return=>$rows->tid}&t=s'>同步</a>";

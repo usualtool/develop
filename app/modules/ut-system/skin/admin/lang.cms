@@ -38,7 +38,7 @@
                             <{loop=>$lang $row}>
                             <label class="form-check-label">
                                 <input class="form-check-input" type="checkbox" name="lang_option[]" value="<{$row}>" 
-                                <{php=>if(library\UsualToolInc\UTInc::Contain(return=>$row,return=>$lang_option)):echo"checked";endif;}>>
+                                <{php=>if(usualtool\Lib\Inc::Contain(return=>$row,return=>$lang_option)):echo"checked";endif;}>>
                                 <span class="form-check-sign"><{$row}></span>
                             </label>
                             <{/loop}>

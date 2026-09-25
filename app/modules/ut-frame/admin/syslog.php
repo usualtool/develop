@@ -1,6 +1,6 @@
 <?php
-use library\UsualToolInc\UTInc;
-use library\UsualToolData\UTData;
+use usualtool\Lib\Inc;
+use usualtool\Lib\Data;
 function GetLog($path){
     if(!file_exists($path) || !is_readable($path)){
         return []; 

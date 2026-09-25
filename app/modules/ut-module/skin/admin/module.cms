@@ -56,7 +56,7 @@
                                                                 <p class="card-category"><{$rows->isfree}></p>
                                                                 <p class="card-category">
                                                                 <{php=>
-                                                                    if(library\UsualToolData\UTData::
+                                                                    if(usualtool\Lib\Data::
                                                                     QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
                                                                         echo"已安装";
                                                                     else:
@@ -93,7 +93,7 @@
                                             <td><{$rows->title}></td>
                                             <td>
                                                 <{php=>
-                                                if(library\UsualToolData\UTData::QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
+                                                if(usualtool\Lib\Data::QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
                                                     echo"已安装";
                                                 else:
                                                     echo"<a href='?m=ut-module&p=module&do=install&mid={return=>$rows->mid}&t=b' class='text-blue'>安装</a>";
@@ -131,7 +131,7 @@
                                                             </p>
                                                             <p class="card-category">
                                                             <{php=>
-                                                                if(library\UsualToolData\UTData::QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
+                                                                if(usualtool\Lib\Data::QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
                                                                     echo"已安装";
                                                                 else:
                                                                     echo"<a href='?m=ut-module&p=module&do=install&mid={return=>$rows->mid}&t=s'>安装模块</a>";

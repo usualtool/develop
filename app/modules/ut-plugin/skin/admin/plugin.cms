@@ -56,7 +56,7 @@
                                                                 <p class="card-category"><{$rows->isfree}></p>
                                                                 <p class="card-category">
                                                                 <{php=>
-                                                                    if(library\UsualToolData\UTData::QueryData("cms_plugin","","pid='{return=>$rows->pid}'","","")["querynum"]>0):
+                                                                    if(usualtool\Lib\Data::QueryData("cms_plugin","","pid='{return=>$rows->pid}'","","")["querynum"]>0):
                                                                         echo"已安装";
                                                                     else:
                                                                         echo"<i class='fas fa-pen-nib'></i> <a style='color:green;' href='?m=ut-plugin&p=plugin&do=install&pid={return=>$rows->pid}&t=g'>安装插件</a>";
@@ -92,7 +92,7 @@
                                             <td><{$rows->title}></td>
                                             <td>
                                                 <{php=>
-                                                if(library\UsualToolData\UTData::QueryData("cms_plugin","","pid='{return=>$rows->pid}'","","")["querynum"]>0):
+                                                if(usualtool\Lib\Data::QueryData("cms_plugin","","pid='{return=>$rows->pid}'","","")["querynum"]>0):
                                                     echo"已安装";
                                                 else:
                                                      echo"<a href='?m=ut-plugin&p=plugin&do=install&pid={return=>$rows->pid}&t=b' class='text-blue'>安装</a>";
@@ -122,7 +122,7 @@
                                                                 <p class="card-category"><{$rows->auther}></p>
                                                                 <p class="card-category">
                                                                 <{php=>
-                                                                    if(library\UsualToolData\UTData::QueryData("cms_plugin","","pid='{return=>$rows->pid}'","","")["querynum"]>0):
+                                                                    if(usualtool\Lib\Data::QueryData("cms_plugin","","pid='{return=>$rows->pid}'","","")["querynum"]>0):
                                                                         echo"已安装";
                                                                     else:
                                                                         echo"<i class='fas fa-pen-nib'></i> <a style='color:green;' href='?m=ut-plugin&p=plugin&do=install&pid={return=>$rows->pid}&t=s'>安装</a>";

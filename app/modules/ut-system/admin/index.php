@@ -1,5 +1,5 @@
 <?php
-use library\UsualToolInc\UTInc;
+use usualtool\Lib\Inc;
 $parsedConfig = [];
 $currentSection = 'default';
 $lines = explode("\n", file_get_contents(UTF_ROOT."/.ut.config"));
@@ -38,5 +38,5 @@ if($do=="setup"){
         $info = preg_replace("/{$k}=(.*)/","{$k}={$v}",$info); 
     }
     file_put_contents(UTF_ROOT."/.ut.config",$info);
-    UTInc::GoUrl("?m=ut-system","保存配置成功!");
+    Inc::GoUrl("?m=ut-system","保存配置成功!");
 }
