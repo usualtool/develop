@@ -57,14 +57,14 @@ if($do=="install"){
     $dir_md=Inc::DirList(APP_ROOT."/modules");
     $md_data=explode(",",$md);
     if(Inc::InArray($md_data,$dir_md)==0):
-        Inc::DelDir(APP_ROOT."/template/".$tid);
+        Inc::DelDir(APP_ROOT."/modules/".$mid);
         Inc::GoUrl("-1","模块依赖的前置模块缺失!模块如下：".$md);
     endif;
     $pl=Inc::StrSubstr("<plugin>","</plugin>",$mods);
     $dir_pl=Inc::DirList(APP_ROOT."/plugins");
     $pl_data=explode(",",$pl);
     if(Inc::InArray($pl_data,$dir_pl)==0):
-        Inc::DelDir(APP_ROOT."/template/".$tid);
+        Inc::DelDir(APP_ROOT."/modules/".$mid);
         Inc::GoUrl("-1","模块依赖的前置插件缺失!插件如下：".$pl);
     endif;
     $title=Inc::StrSubstr("<title>","</title>",$mods);

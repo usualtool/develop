@@ -15,7 +15,7 @@ if($_GET["do"]=="update"){
     $fieldx=explode("-UT-",$fields);
     $wherex=explode("-UT-",$wheres);
     $pagex=explode("-UT-",$pages);
-    for($s=0;$s<=count($dbx);$s++){
+    for($s=0;$s<count($dbx);$s++){
         if($idx[$s]=="x"){
             Data::InsertData("cms_search_set",array(
                 "dbs"=>$dbx[$s],
@@ -29,7 +29,6 @@ if($_GET["do"]=="update"){
                 "wheres"=>$wherex[$s],
                 "pages"=>$pagex[$s]),"id='".$idx[$s]."'");
         }
-        Data::RunSql($sql);
     }
     Inc::GoUrl("?m=ut-system&p=search","设置成功!");
 }
