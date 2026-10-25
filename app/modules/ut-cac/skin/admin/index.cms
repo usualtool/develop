@@ -96,7 +96,7 @@
                 if(event.keyCode == "13") {
                     var o = $input.val();
                     o = o.replace(/^\[.*?@localhost ~\]# /, "");
-                    $.post("?m=ut-cac&p=cli", {o: o}, function(result){
+                    $.post("<{url=>Link("ut-cac","cli")}>", {o: o}, function(result){
                         const escaped = String(result)
                             .replace(/&/g, '&amp;')
                             .replace(/</g, '&lt;')

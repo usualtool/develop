@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=<{$module}>"><{$title}></a>
+                            <a href="<{url=>Link($module)}>"><{$title}></a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -37,9 +37,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form name="action" method="get" action="?">
-                        <input type=hidden name="m" value="<{$module}>">
-                        <input type=hidden name="p" value="article">
+                        <form name="action" method="get" action="<{url=>Link($module)}>">
                             <div class="table-responsive" id="ut-auto">
                                 <table class="display table table-striped table-hover">
                                     <thead>
@@ -81,7 +79,7 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form action="?m=ut-oauth&p=user&do=creat" method="post">
+            <form action="<{url=>Link("ut-oauth","user","do=creat")}>" method="post">
               <div class="form-group row">
                 <div class="col-md-6">
                   <label>* 账户</label>

@@ -1,14 +1,18 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 $do=$_GET["do"];
 if($do=="out"){
     unset($_SESSION['admin']);
     unset($_SESSION['admin_id']);
     setcookie("Nav","ut-frame");
-    echo"<script>alert('登出UT Develop成功!');window.location.href='?p=login'</script>";
+    Inc::GoUrl(Route::Link("ut-frame","login"),"登出UT Develop成功!");
 }
 if($do=="login"){
+    if(isset($_SESSION["login_fail"]) && $_SESSION["login_fail"]>=5 && time()-$_SESSION["login_fail_time"]<600){
+        Inc::GoUrl("-1","失败次数过多,请10分钟后再试!");
+    }
     $username=Inc::SqlCheck($_POST["username"]);
     $password=Inc::SqlCheck($_POST["password"]);
     $code=Inc::SqlCheck(strtolower($_POST["code"]));
@@ -30,18 +34,28 @@ if($do=="login"){
                     session_regenerate_id(TRUE);
                     setcookie("Nav","ut-frame");
                     setcookie("Lock",0);
-                    Inc::GoUrl(rtrim($config["APPURL"],"/").$config["DEVELOP"]."/?p=index","登陆UT Develop成功!");
+                    unset($_SESSION["login_fail"]);
+                    unset($_SESSION["login_fail_time"]);
+                    Inc::GoUrl(Route::Link("ut-frame","index"),"登陆UT Develop成功!");
                 }else{
+                    $_SESSION["login_fail"]=(time()-(isset($_SESSION["login_fail_time"])?$_SESSION["login_fail_time"]:0)>600)?1:(isset($_SESSION["login_fail"])?$_SESSION["login_fail"]:0)+1;
+                    $_SESSION["login_fail_time"]=time();
                     Inc::GoUrl("-1","账户或密码不匹配!");
                 }
             }else{
+                $_SESSION["login_fail"]=(time()-(isset($_SESSION["login_fail_time"])?$_SESSION["login_fail_time"]:0)>600)?1:(isset($_SESSION["login_fail"])?$_SESSION["login_fail"]:0)+1;
+                $_SESSION["login_fail_time"]=time();
                 Inc::GoUrl("-1","账户不存在!");
             }
         }else{
+            $_SESSION["login_fail"]=(time()-(isset($_SESSION["login_fail_time"])?$_SESSION["login_fail_time"]:0)>600)?1:(isset($_SESSION["login_fail"])?$_SESSION["login_fail"]:0)+1;
+            $_SESSION["login_fail_time"]=time();
             Inc::GoUrl("-1","账户或密码不能为空!");
         }
     }else{
+        $_SESSION["login_fail"]=(time()-(isset($_SESSION["login_fail_time"])?$_SESSION["login_fail_time"]:0)>600)?1:(isset($_SESSION["login_fail"])?$_SESSION["login_fail"]:0)+1;
+        $_SESSION["login_fail_time"]=time();
         Inc::GoUrl("-1","验证码不正确!");
-    }    
+    }
 }
 $app->Open("login.cms");

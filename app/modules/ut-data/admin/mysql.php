@@ -2,10 +2,6 @@
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 /**
- * 连接数据库
- */
-$db=Data::GetDatabase();
-/**
  * 传递参数过程
  */
 $do=Inc::SqlCheck($_GET["do"]);
@@ -48,7 +44,7 @@ if($do=="mysql-edit"){
         $sql="ALTER TABLE `".$table."` CHANGE `".$oldcol[$i]."` `".$col[$i]."` ".strtoupper($type[$i])." ".$thenull." ".$thedef." ".$theext.";";
         Data::RunSql($sql);
     }
-    echo 1;    
+    echo 1;
 }
 if($do=="mysql-add"){
     $table=$_POST["u_table"];

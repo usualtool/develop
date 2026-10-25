@@ -31,12 +31,14 @@
                     <div class="card-header">
                         <div class="card-head-row">
                             <div class="card-title">
-                                <a class="btn btn-success" style="color:white;" href="?m=ut-data&p=backup&do=sql-backup">
+                                <{if $dbtype=="mysql"}>
+                                <a class="btn btn-success" style="color:white;" href="<{url=>Link("ut-data","backup","do=sql-backup")}>">
                                 <span class="btn-label">
                                     <i class="fa fa-database"></i>
                                 </span>
                                 备份数据库
                                 </a>
+                                <{/if}>
                             </div>
                         </div>
                     </div>
@@ -51,17 +53,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <{if $dbtype!="mysql"}>
+                                <tr>
+                                    <td colspan="4" class="text-warning"><i class="fa fa-exclamation-triangle"></i> 当前数据库类型为 <{$dbtype}>，在线备份/还原仅支持 MySQL</td>
+                                </tr>
+                                <{else}>
                                 <{loop=>$data $rows}>
                                 <tr>
                                     <td><{$rows->name}></td>
                                     <td><{$rows->size}></td>
                                     <td><{$rows->time}></td>
                                     <td>
-                                    <a href='?m=ut-data&p=backup&do=sql-rev&sql=<{$rows->name}>'>还原</a> | 
-                                    <a href='?m=ut-data&p=backup&do=sql-del&sql=<{$rows->name}>'>删除</a>
+                                    <a href='<{url=>Link("ut-data","backup","do=sql-rev&sql=".$rows["name"])}>'>还原</a> | 
+                                    <a href='<{url=>Link("ut-data","backup","do=sql-del&sql=".$rows["name"])}>'>删除</a>
                                     </td>
                                 </tr>
                                 <{/loop}>
+                                <{/if}>
                             </tbody>
                         </table>
                     </div>

@@ -24,7 +24,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                        <a class="btn btn-warning" href="?m=ut-power&p=rolex">创建角色</a>
+                        <a class="btn btn-warning" href="<{url=>Link("ut-power","rolex")}>">创建角色</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -45,8 +45,8 @@
                                         <td><{$rows->role}></td>
                                         <td><{$rows->module}></td>
                                         <td>
-                                        <a href="?m=ut-power&p=rolex&id=<{$rows->id}>">编辑</a> | 
-                                        <a href="?m=ut-power&p=rolex&id=<{$rows->id}>&do=del">删除</a>
+                                        <a href="<{url=>Link("ut-power","rolex","id=".$rows["id"])}>"编辑</a> | 
+                                        <a href="<{url=>Link("ut-power","rolex","id=".$rows["id"]."&do=del")}>">删除</a>
                                         </td>
                                     </tr>
                                     <{/loop}>

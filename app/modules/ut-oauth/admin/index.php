@@ -1,7 +1,8 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
-$pagelink="?m=".$m."&p=".$p;
+use usualtool\Lib\Route;
+$pagelink="";
 $page=empty($_GET["page"]) ? 1 : $_GET["page"];
 $pagenum=10;
 $minid=$pagenum*($page-1);

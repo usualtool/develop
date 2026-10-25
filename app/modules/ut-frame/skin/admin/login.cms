@@ -13,7 +13,7 @@
     <script src="<{$appurl}>/assets/js/bootstrap.min.js"></script>
 </head>
 <body class="login">
-    <form action="?p=login&do=login" method="post">
+    <form action="<{url=>Link("ut-frame","login","do=login")}>" method="post">
     <div class="wrapper wrapper-login">
         <div class="container container-login animated fadeIn">
             <h3 class="text-center">UT可视化管理</h3>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="form-group form-horizontal">
-                    <label for="code" class="control-label"><img onclick='this.src=this.src+"&"+Math.random()' src="?p=captcha"></label>
+                    <label for="code" class="control-label"><img onclick='this.src=this.src+((this.src.indexOf("?")>-1)?"&":"?")+Math.random()' src="<{url=>Link("ut-frame","captcha")}>"></label>
                     <input id="code" name="code" type="text" class="form-control">
                 </div>
                 <div class="form-group">

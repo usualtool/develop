@@ -20,7 +20,7 @@
                     <h1 class="mb-0 no-border">已锁屏</h1>
                     <h3 class="mt-0 mb-5 text-muted">Locked screen</h3>
                     <p>由于您（<strong><{$admin_user}></strong>）在5分钟内无任何操作，系统已自动锁屏，您需要重新验证登录密码。<Br>Since you have not operated within 5 minutes, the system has automatically locked the screen. You need to re verify the account login password.</p>
-                    <form action="?p=lock&do=login&u=<{php=>echo$_GET["u"];}>" method="post">
+                    <form action="<{php=>echo usualtool\Lib\Route::Link("ut-frame","lock","do=login&u=".$_GET["u"]);}>" method="post">
                             <div class="input-group mt-5">
                             <input type="password" placeholder="Enter <{$admin_user}> Password" name="password" class="form-control">
                             <div class="input-group-btn ml-2">

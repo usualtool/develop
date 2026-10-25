@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=ut-power&p=role">角色</a>
+                            <a href="<{url=>Link("ut-power","role")}>">角色</a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="card">
                     <{if empty($id)}>
-                        <form action="?m=ut-power&p=rolex&do=add" method="post" name="form">
+                        <form action="<{url=>Link("ut-power","rolex","do=add")}>" method="post" name="form">
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="disableinput">角色名称</label>
@@ -37,7 +37,7 @@
                             </div>
                             <div class="form-check">
                                 <label>模块权限</label><br>
-                                <{loop=>$module $row}>
+                                <{loop=>$modlist $row}>
                                 <label class="form-check-label">
                                     <input class="form-check-input" type="checkbox" name="module[]" value="<{$row->mid}>">
                                     <span class="form-check-sign"><{$row->modname}></span>
@@ -51,7 +51,7 @@
                         </form>
                     <{else}>
                         <{loop=>$data $rows}>
-                        <form action="?m=ut-power&p=rolex&do=mon" method="post" name="form">
+                        <form action="<{url=>Link("ut-power","rolex","do=mon")}>" method="post" name="form">
                         <div class="card-body">
                         <input type="hidden" name="id" value="<{$rows->id}>">
                             <div class="form-group">
@@ -60,7 +60,7 @@
                             </div>
                             <div class="form-check">
                                 <label>模块权限</label><br>
-                                <{loop=>$module $row}>
+                                <{loop=>$modlist $row}>
                                 <label class="form-check-label">
                                     <input class="form-check-input" type="checkbox" name="module[]" value="<{$row->mid}>" <{if strpos($rows["module"],$row["mid"])!==false}>checked<{/if}>>
                                     <span class="form-check-sign"><{$row->modname}></span>

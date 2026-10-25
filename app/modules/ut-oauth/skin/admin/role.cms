@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=<{$module}>"><{$title}></a>
+                            <a href="<{url=>Link($module)}>"><{$title}></a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -70,7 +70,7 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <div class="modal-body">
-            <form action="?m=ut-oauth&p=role&do=creat" method="post">
+            <form action="<{url=>Link("ut-oauth","role","do=creat")}>" method="post">
               <div class="form-group row">
                 <div class="col-md-6">
                   <label>* 权限中文名称</label>

@@ -26,7 +26,7 @@
     <div class="container">
         <div class="login-card bg-white">
             <h3 class="text-center mb-4">OAuth2.0 登录</h3>
-            <form action="?m=ut-oauth&p=login&do=login" method="post">
+            <form action="<{url=>Link("ut-oauth","login","do=login")}>" method="post">
             <input type="hidden" name="gourl" value="<{$redirect}>">
                 <div class="form-group">
                   <label for="username">账户</label>

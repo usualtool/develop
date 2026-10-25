@@ -57,15 +57,15 @@
                             </a>
                         </li>                        
                         <li class="nav-item dropdown hidden-caret submenu">
-                            <a href="?p=update" title="系统更新">
+                            <a href="<{url=>Link("ut-frame","update")}>" title="系统更新">
                             <div class="custom-toggle"><i class="fas fa-sync-alt"></i></div>
                             </a>
                         </li>
                         <li class="nav-item hidden-caret">
-                            <a class="nav-link" title="系统日志" href="?p=syslog"><i class="fas fa-location-arrow"></i></a>
+                            <a class="nav-link" title="系统日志" href="<{url=>Link("ut-frame","syslog")}>"><i class="fas fa-location-arrow"></i></a>
                         </li>
                         <li class="nav-item hidden-caret">
-                            <a class="nav-link" title="在建项目" href="?p=task"><i class="fas fa-history"></i></a>
+                            <a class="nav-link" title="在建项目" href="<{url=>Link("ut-frame","task")}>"><i class="fas fa-history"></i></a>
                         </li>
                         <li class="nav-item dropdown hidden-caret" style="margin-right:20px;">
                             <a class="nav-link dropdown-toggle" href="#" title="官方消息" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -137,11 +137,11 @@
                                 </li>
                                 <li>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="?m=ut-power&p=admin&id=<{$admin_id}>">
+                                    <a class="dropdown-item" href="<{url=>Link("ut-power","admin","id=".$admin_id)}>">
                                         <i class="fas fa-user-tie"></i> 账户
                                     </a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="?p=login&do=out">
+                                    <a class="dropdown-item" href="<{url=>Link("ut-frame","login","do=out")}>">
                                         <i class="fa fa-sign-out-alt" aria-hidden="true"></i> 退出系统
                                     </a>
                                 </li>
@@ -173,12 +173,12 @@
                             <div class="collapse in" id="collapseExample">
                                 <ul class="nav">
                                     <li>
-                                        <a href="?m=ut-power&p=adminx&id=<{$admin_id}>">
+                                        <a href="<{url=>Link("ut-power","adminx","id=".$admin_id)}>">
                                             <span class="link-collapse">修改密码</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="?p=login&do=out">
+                                        <a href="<{url=>Link("ut-frame","login","do=out")}>">
                                             <span class="link-collapse">退出</span>
                                         </a>
                                     </li>
@@ -206,7 +206,7 @@
                                                     for($j=0;$j<count($this_backitem);$j++):
                                                         $this_sm_nav=explode(':',$this_backitem[$j]);
                                                         echo"<li>\r\n";
-                                                            echo"<a href='?m=".$this_nav_data["mid"]."&p=".$this_sm_nav[1]."' onclick=\"clicknav('".$this_nav_data["mid"]."')\" style=\"padding:5px 25px !important;\">\r\n";
+                                                            echo"<a href='".usualtool\Lib\Route::Link($this_nav_data["mid"],$this_sm_nav[1])."' onclick=\"clicknav('".$this_nav_data["mid"]."')\" style=\"padding:5px 25px !important;\">\r\n";
                                                                 echo"<span class=\"sub-item\">".$this_sm_nav[0]."</span>\r\n";
                                                             echo"</a>\r\n";
                                                         echo"</li>\r\n";
@@ -224,7 +224,7 @@
                             <{loop=>$custmods as $rows}>
                                 <{if empty($rows["backitem"])}>
                                     <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
-                                        <a href="?m=<{$rows->mid}>" onclick="clicknav('<{$rows->mid}>')">
+                                        <a href="<{url=>Link($rows["mid"])}>" onclick="clicknav('<{$rows->mid}>')">
                                                 <i class="fas fa-sort"></i>
                                                 <p><{$rows->modname}></p>
                                         </a>
@@ -245,7 +245,7 @@
                                             $navurl=explode(":",$navs[$k])[1];
                                             }>
                                                 <li>
-                                                    <a href="?m=<{$rows->mid}>&p=<{php=>echo$navurl}>" onclick="clicknav('<{$rows->mid}>')">
+                                                    <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>" onclick="clicknav('<{$rows->mid}>')">
                                                         <span class="sub-item"><{php=>echo$navtitle}></span>
                                                     </a>
                                                 </li>
@@ -264,7 +264,7 @@
                             <{loop=>$modules as $rows}>
                                 <{if empty($rows["backitem"])}>
                                     <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
-                                        <a href="?m=<{$rows->mid}>" onclick="clicknav('<{$rows->mid}>')">
+                                        <a href="<{url=>Link($rows["mid"])}>" onclick="clicknav('<{$rows->mid}>')">
                                             <{if $rows["mid"]=="ut-cac"}>
                                                 <i class="fas fa-chalkboard"></i>
                                             <{else}>
@@ -307,7 +307,7 @@
                                             $navurl=explode(":",$navs[$k])[1];
                                             }>
                                                 <li>
-                                                    <a href="?m=<{$rows->mid}>&p=<{php=>echo$navurl}>" onclick="clicknav('<{$rows->mid}>')">
+                                                    <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>" onclick="clicknav('<{$rows->mid}>')">
                                                         <span class="sub-item"><{php=>echo$navtitle}></span>
                                                     </a>
                                                 </li>

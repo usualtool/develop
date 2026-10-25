@@ -24,7 +24,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">
-                        <a class="btn btn-warning" href="?m=ut-power&p=admin">创建账户</a>
+                        <a class="btn btn-warning" href="<{url=>Link("ut-power","admin")}>">创建账户</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -48,21 +48,21 @@
                                     <td><{db=>QueryData("cms_admin_role","","id='".$rows["roleid"]."'")["querydata"][0]["role"]}></td>
                                     <td>
                                     <{if $rows["state"]==0}>
-                                        <a href="?m=ut-power&do=update&id=<{$rows->id}>&state=1"><span class="text-success">正常</span></a>
+                                        <a href="<{url=>Link("ut-power","","do=update&id=".$rows["id"]."&state=1")}>"><span class="text-success">正常</span></a>
                                     <{else}>
-                                        <a href="?m=ut-power&do=update&id=<{$rows->id}>&state=0"><span class="text-danger">终止</span></a>
+                                        <a href="<{url=>Link("ut-power","","do=update&id=".$rows["id"]."&state=0")}>"><span class="text-danger">终止</span></a>
                                     <{/if}>
                                     </td>
                                     <td><div class="avatar avatar-xs"><img src="<{$rows->avatar}>" class="avatar-img rounded-circle"></div></td>
                                     <td><{$rows->addtime}></td>
                                     <td>
                                     <{if $rows["state"]==0}>
-                                        <a href="?m=ut-power&p=admin&id=<{$rows->id}>">编辑</a>
+                                        <a href="<{url=>Link("ut-power","admin","id=".$rows["id"])}>"编辑</a>
                                     <{else}>
                                         编辑
                                     <{/if}>
                                     | 
-                                    <a href="?m=ut-power&p=admin&id=<{$rows->id}>&do=del">删除</a>
+                                    <a href="<{url=>Link("ut-power","admin","id=".$rows["id"]."&do=del")}>">删除</a>
                                     </td>
                                 </tr>
                                 <{/loop}>

@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=ut-power&p=admin">管理员</a>
+                            <a href="<{url=>Link("ut-power","admin")}>">管理员</a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -30,7 +30,7 @@
                 <div class="card">
                     <{if empty($id)}>
                         <div class="card-body">
-                            <form action="?m=ut-power&p=admin&do=add" method="post" name="form">
+                            <form action="<{url=>Link("ut-power","admin","do=add")}>" method="post" name="form">
                             <div class="form-check">
                                 <label>角色</label><br>
                                 <{loop=>$role $row}>
@@ -56,7 +56,7 @@
                                 <label for="avatar">头像</label>
                                 <input type="file" class="form-control-file" id="file">
                                 <input type="text" class="form-control mt-2" name="avatar" id="avatar">
-                                <input type="button" value="上传" onclick="upload('file','avatar','','<{$appurl}>/dev/?p=upload')" class="btn btn-warning mt-2">
+                                <input type="button" value="上传" onclick="upload('file','avatar','','<{url=>Link("ut-frame","upload")}>')" class="btn btn-warning mt-2">
                             </div>
                             <div class="form-group">
                                 <button class="btn btn-info">创建</button>
@@ -65,7 +65,7 @@
                         </div>
                     <{else}>
                         <div class="card-body">
-                            <form action="?m=ut-power&p=admin&do=mon" method="post" name="form">
+                            <form action="<{url=>Link("ut-power","admin","do=mon")}>" method="post" name="form">
                             <{loop=>$data $rows}>
                                 <input type="hidden" name="id" value="<{$rows->id}>">
                                 <input type="hidden" name="username" value="<{$rows->username}>">
@@ -94,7 +94,7 @@
                                     <label for="avatar">头像</label>
                                     <input type="file" class="form-control-file" id="file">
                                     <input type="text" class="form-control mt-2" name="avatar" id="avatar" value="<{$rows->avatar}>">
-                                    <input type="button" value="上传" onclick="upload('file','avatar','','<{$appurl}>/dev/?p=upload')" class="btn btn-warning mt-2">
+                                    <input type="button" value="上传" onclick="upload('file','avatar','','<{url=>Link("ut-frame","upload")}>')" class="btn btn-warning mt-2">
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn-info">编辑</button>

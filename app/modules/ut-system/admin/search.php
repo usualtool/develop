@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 $data=Data::QueryData("cms_search_set","","","","")["querydata"];
 $app->Runin("data",$data);
 $app->Open("search.cms");
@@ -30,13 +31,13 @@ if($_GET["do"]=="update"){
                 "pages"=>$pagex[$s]),"id='".$idx[$s]."'");
         }
     }
-    Inc::GoUrl("?m=ut-system&p=search","设置成功!");
+    Inc::GoUrl(Route::Link("ut-system","search"),"设置成功!");
 }
 if($_GET["do"]=="del"){
     $id=Inc::SqlCheck($_GET["id"]);
     if(Data::DelData("cms_search_set","id='$id'")){
-        Inc::GoUrl("?m=ut-system&p=search","删除成功!");
+        Inc::GoUrl(Route::Link("ut-system","search"),"删除成功!");
     }else{
-        Inc::GoUrl("?m=ut-system&p=search","删除失败!");
+        Inc::GoUrl(Route::Link("ut-system","search"),"删除失败!");
     }
 }

@@ -50,9 +50,9 @@
                                                         <{/if}>
                                                         </p>
                                                         <p class="card-category">
-                                                        <a href="?m=<{$rows->mid}>&p=<{$rows->modurl}>">使用</a> 
+                                                        <a href="<{url=>Link($rows["mid"],$rows["modurl"])}>">使用</a> 
                                                         <{if $rows["bid"]!=3}>| 
-                                                        <a href="?m=ut-module&do=uninstall&mid=<{$rows->mid}>">卸载</a>
+                                                        <a href="<{url=>Link("ut-module","","do=uninstall&mid=".$rows["mid"])}>">卸载</a>
                                                         <{/if}>
                                                         </p>
                                                     </div>

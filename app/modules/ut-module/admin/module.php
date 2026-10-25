@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 $do=$_GET["do"];
 /**
  * 载入私有模块
@@ -21,52 +22,52 @@ $app->Open("module.cms");
 if($do=="install"){
     $t=$_GET["t"];
     $mid=str_replace(".","",Inc::SqlCheck($_GET["mid"]));
-    if($t!="s"):
-        if($t=="g"):
-            $down=Inc::Auth($config["UTCODE"],$config["UTFURL"],"module-".$mid);
-        elseif($t=="b"):  
-            $down=Inc::Auth($config["UTCODE"],$config["UTFURL"],"moduleorder-".$mid);
-        endif;
+    if($t!="s"){
+        if($t=="g"){
+            $down=Inc::Auth("module-".$mid);
+        }elseif($t=="b"){
+            $down=Inc::Auth("moduleorder-".$mid);
+        }
         $downurl=Inc::StrSubstr("<downurl>","</downurl>",$down);
         $filename=basename($downurl);
         $res=Inc::SaveFile($downurl,APP_ROOT."/modules",$filename,1);
-        if(!empty($res)):
-            Inc::Auth($config["UTCODE"],$config["UTFURL"],"moduledel-".str_replace(".zip","",$filename)."");
+        if(!empty($res)){
+            Inc::Auth("moduledel-".str_replace(".zip","",$filename));
             $zip=new ZipArchive;
-            if($zip->open(APP_ROOT."/modules/".$filename)===TRUE): 
+            if($zip->open(APP_ROOT."/modules/".$filename)===TRUE){
                 $zip->extractTo(APP_ROOT."/modules/");
                 $zip->close();
                 unlink(APP_ROOT."/modules/".$filename);
-            else:
+            }else{
                 Inc::GoUrl("-1","modules目录775权限不足!");
-            endif;
-        else:
+            }
+        }else{
             Inc::GoUrl("-1","安装权限不足!");
-        endif;
-    endif;
-    if(is_dir(APP_ROOT."/modules/".$mid."/assets")):
-		    $assets_dir=OPEN_ROOT."/assets/modules/".$mid;
-        if(!is_dir($assets_dir)):
-			      Inc::MakeDir($assets_dir);
-		    endif;
-		    Inc::MoveDir(APP_ROOT."/modules/".$mid."/assets",$assets_dir);
-				Inc::DelDir(APP_ROOT."/modules/".$mid."/assets");
-    endif;
+        }
+    }
+    if(is_dir(APP_ROOT."/modules/".$mid."/assets")){
+        $assets_dir=OPEN_ROOT."/assets/modules/".$mid;
+        if(!is_dir($assets_dir)){
+            Inc::MakeDir($assets_dir);
+        }
+        Inc::MoveDir(APP_ROOT."/modules/".$mid."/assets",$assets_dir);
+        Inc::DelDir(APP_ROOT."/modules/".$mid."/assets");
+    }
     $mods=file_get_contents(APP_ROOT."/modules/".$mid."/usualtool.config");
     $md=Inc::StrSubstr("<module>","</module>",$mods);
     $dir_md=Inc::DirList(APP_ROOT."/modules");
     $md_data=explode(",",$md);
-    if(Inc::InArray($md_data,$dir_md)==0):
+    if(Inc::InArray($md_data,$dir_md)==0){
         Inc::DelDir(APP_ROOT."/modules/".$mid);
         Inc::GoUrl("-1","模块依赖的前置模块缺失!模块如下：".$md);
-    endif;
+    }
     $pl=Inc::StrSubstr("<plugin>","</plugin>",$mods);
     $dir_pl=Inc::DirList(APP_ROOT."/plugins");
     $pl_data=explode(",",$pl);
-    if(Inc::InArray($pl_data,$dir_pl)==0):
+    if(Inc::InArray($pl_data,$dir_pl)==0){
         Inc::DelDir(APP_ROOT."/modules/".$mid);
         Inc::GoUrl("-1","模块依赖的前置插件缺失!插件如下：".$pl);
-    endif;
+    }
     $title=Inc::StrSubstr("<title>","</title>",$mods);
     $sorting=Inc::StrSubstr("<sorting>","</sorting>",$mods);
     $starturl=Inc::StrSubstr("<starturl>","</starturl>",$mods);
@@ -75,19 +76,19 @@ if($do=="install"){
     $itemid=Inc::StrSubstr("<itemid>","</itemid>",$mods);
     $installsql=Inc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$mods);
     $role=Data::QueryData("cms_admin_role","","","","")["querydata"];
-    foreach($role as $rows):
+    foreach($role as $rows){
         $role_range=Data::QueryData("cms_admin_role","","id='".$rows["id"]."'","","")["querydata"][0]["module"];
         $new_range=$role_range.",".$mid;
         Data::UpdateData("cms_admin_role",array("module"=>$new_range),"id='".$rows["id"]."'");
-    endforeach;
-    if(Data::QueryData("cms_module","","mid='$mid'","","1")["querynum"]>0):
+    }
+    if(Data::QueryData("cms_module","","mid='$mid'","","1")["querynum"]>0){
         Data::UpdateData("cms_module",array(
             "bid"=>$itemid,
             "modname"=>$title,
             "modurl"=>$starturl,
             "befoitem"=>$befoitem,
             "backitem"=>$backitem),"mid='$mid'");
-    else:
+    }else{
         Data::InsertData("cms_module",array(
             "bid"=>$itemid,
             "mid"=>$mid,
@@ -98,14 +99,14 @@ if($do=="install"){
             "ordernum"=>$sorting,
             "befoitem"=>$befoitem,
             "backitem"=>$backitem));
-    endif;
-    if($installsql=='0'):
-        Inc::GoUrl("?m=ut-module&p=module","成功安装模块!");
-    else:
-        if(Data::RunSql($installsql)):
-            Inc::GoUrl("?m=ut-module&p=module","成功安装模块!");
-        else:
+    }
+    if($installsql=='0'){
+        Inc::GoUrl(Route::Link("ut-module","module"),"成功安装模块!");
+    }else{
+        if(Data::RunSql($installsql)){
+            Inc::GoUrl(Route::Link("ut-module","module"),"成功安装模块!");
+        }else{
             Inc::GoUrl("-1","模块安装失败!");
-        endif;   
-    endif;
+        }
+    }
 }

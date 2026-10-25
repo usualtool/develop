@@ -44,7 +44,7 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <div class="modal-body">
-              <form action="?m=ut-oauth&p=app&do=creat" method="post">
+              <form action="<{url=>Link("ut-oauth","app","do=creat")}>" method="post">
               <div class="form-group row">
                 <div class="col-6">
                 <label>应用ID（英文名）</label>

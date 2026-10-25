@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 /**
  * 传递参数过程
  */
@@ -17,11 +18,11 @@ if($do=="sql"){
     if(!empty($sql)){
         $res=Data::RunSql($sql);
         if($res){
-            echo "<script>alert('SQL执行成功!');window.location.href='?m=ut-data&p=sql'</script>";	
+            Inc::GoUrl(Route::Link("ut-data","sql"),"SQL执行成功!");
         }else{
-            echo "<script>alert('SQL执行失败!');window.location.href='?m=ut-data&p=sql'</script>";
+            Inc::GoUrl("-1","SQL执行失败!");
         }
     }else{
-        echo "<script>alert('SQL执行失败!关键语句为空!');window.location.href='?m=ut-data&p=sql'</script>";
+        Inc::GoUrl("-1","SQL执行失败!关键语句为空!");
     }
 }

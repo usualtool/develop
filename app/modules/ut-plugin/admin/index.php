@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 $do=$_GET["do"];
 /**
  * 载入已安装插件
@@ -16,21 +17,21 @@ if($do=="uninstall"){
     $plugins=file_get_contents($pconfig);
     $uninstallsql=Inc::StrSubstr("<uninstallsql><![CDATA[","]]></uninstallsql>",$plugins);
     Data::DelData("cms_plugin","pid='$pid'");
-    if($uninstallsql=='0'):
+    if($uninstallsql=='0'){
         Inc::DelDir(APP_ROOT."/plugins/".$pid);
-        if(is_dir(OPEN_ROOT."/assets/plugins/".$pid)):
+        if(is_dir(OPEN_ROOT."/assets/plugins/".$pid)){
             Inc::DelDir(OPEN_ROOT."/assets/plugins/".$pid);
-        endif;
-        Inc::GoUrl("?m=ut-plugin","成功卸载插件!");
-    else:
-        if(Data::RunSql($uninstallsql)):
+        }
+        Inc::GoUrl(Route::Link("ut-plugin"),"成功卸载插件!");
+    }else{
+        if(Data::RunSql($uninstallsql)){
             Inc::DelDir(APP_ROOT."/plugins/".$pid);
-            if(is_dir(OPEN_ROOT."/assets/plugins/".$pid)):
+            if(is_dir(OPEN_ROOT."/assets/plugins/".$pid)){
                 Inc::DelDir(OPEN_ROOT."/assets/plugins/".$pid);
-            endif;
-            Inc::GoUrl("?m=ut-plugin","成功卸载插件!");
-        else:
+            }
+            Inc::GoUrl(Route::Link("ut-plugin"),"成功卸载插件!");
+        }else{
             Inc::GoUrl("-1","插件卸载失败!");
-        endif;   
-    endif;
+        }
+    }
 }

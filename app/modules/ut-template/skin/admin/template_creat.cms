@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=ut-template"><{$title}></a>
+                            <a href="<{url=>Link("ut-template")}>"<{$title}></a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -29,11 +29,11 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                    <form action="?m=ut-template&p=template_creat&do=save" method="post">
+                    <form action="<{url=>Link("ut-template","template_creat","do=save")}>" method="post">
                         <div class="form-group form-group-default">
                             <label>所属模块</label>
                             <select class="form-control" name="module">
-                            <{loop=>$modules $rows}>
+                            <{loop=>$modlist $rows}>
                                 <option value="<{$rows->mid}>"><{$rows->mid}>:<{$rows->modname}></option>
                             <{/loop}>
                             </select>

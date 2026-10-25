@@ -6,13 +6,13 @@ if($do=="del"){
     if(in_array(substr($img,-4),array(
         ".jpg",
         ".png",
-        ".gif"))):
+        ".gif"))){
         $img=str_replace($config["APPURL"],OPEN_ROOT,$img);
         Inc::UnlinkFile($img);
         echo json_encode(array("error"=>0));
-    else:
+    }else{
         echo json_encode(array("error"=>1));
-    endif;
+    }
 }else{
     if(!empty($_POST['l'])){
         $l=str_replace("..","",$_POST['l']);
@@ -51,7 +51,14 @@ if($do=="del"){
             "error"=>"Illegal source of documents!<br>|-|Illegal source of documents!")
         );
     }else{
-        if(move_uploaded_file($file['tmp_name'],$picurl)){
+        $fp=fopen($file['tmp_name'],'rb');
+        $head=$fp ? fread($fp,65536) : "";
+        if($fp){ fclose($fp); }
+        if(stripos($head,"<?php")!==false || stripos($head,"<?=")!==false){
+            echo json_encode(array(
+                "error"=>"The file content is illegal!")
+            );
+        }elseif(move_uploaded_file($file['tmp_name'],$picurl)){
             echo json_encode(array(
                 "error"=>"0",
                 "pic"=>str_replace(OPEN_ROOT,$config["APPURL"],$picurl),

@@ -24,7 +24,7 @@
                                     <li class="feed-item feed-item-secondary">
                                       <div class="row">
                                       <div class="col-md-3">
-                                        <time class="date" datetime="<{split=>$rows,^,1}>"><{split=>$rows,"^",1}></time>
+                                        <time class="date" datetime="<{split=>$rows,"^",1}>"><{split=>$rows,"^",1}></time>
                                       </div>
                                       <div class="col-md-6">
                                         <span class="text"><{split=>$rows,"^",0}></span>
@@ -43,7 +43,7 @@
                                         }>
                                             已更新
                                           <{php=>else:}>
-                                            <a href="?p=update&i=<{split=>$rows,"^",1}>&t=update">更新</a>
+                                            <a href="<{php=>echo usualtool\Lib\Route::Link("ut-frame","update","i=".explode("^",return=>$rows)[1]."&t=update");}>">更新</a>
                                           <{php=>endif;}>
                                         <{php=>endif;}>
                                       </div>

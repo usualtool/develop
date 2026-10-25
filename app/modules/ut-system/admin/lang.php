@@ -1,5 +1,6 @@
 <?php
 use usualtool\Lib\Inc;
+use usualtool\Lib\Route;
 use usualtool\Lib\Lang;
 $do=$_GET["do"];
 /**
@@ -25,5 +26,5 @@ if($do=="setup"){
     $info = preg_replace("/LANG=(.*)/","LANG={$lang_default}",$info);
     $info = preg_replace("/LANG_OPTION=(.*)/","LANG_OPTION={$lang_option}",$info);
     file_put_contents(UTF_ROOT."/.ut.config",$info);
-    Inc::GoUrl("?m=ut-system&p=lang","保存配置成功!");
+    Inc::GoUrl(Route::Link("ut-system","lang"),"保存配置成功!");
 }

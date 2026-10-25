@@ -1,5 +1,6 @@
 <?php
 use usualtool\Lib\Inc;
+use usualtool\Lib\Route;
 $parsedConfig = [];
 $currentSection = 'default';
 $lines = explode("\n", file_get_contents(UTF_ROOT."/.ut.config"));
@@ -38,5 +39,5 @@ if($do=="setup"){
         $info = preg_replace("/{$k}=(.*)/","{$k}={$v}",$info); 
     }
     file_put_contents(UTF_ROOT."/.ut.config",$info);
-    Inc::GoUrl("?m=ut-system","保存配置成功!");
+    Inc::GoUrl(Route::Link("ut-system"),"保存配置成功!");
 }

@@ -167,7 +167,7 @@
             if(result.value){
                 var u_sql=$("#u_sql").val();
                 $.ajax({
-                     url:'?m=ut-data&p=mysql&do=mysql-sql',
+                     url:'<{url=>Link("ut-data","mysql","do=mysql-sql")}>',
                      type:"post",
                      data:{
                          'sql':u_sql
@@ -230,7 +230,7 @@
                     udefs+=$(this).val()+",";
                 });
                 $.ajax({
-                     url:'?m=ut-data&p=mysql&do=mysql-add',
+                     url:'<{url=>Link("ut-data","mysql","do=mysql-add")}>',
                      type:"post",
                      data:{
                          'u_table':u_table,
@@ -324,7 +324,7 @@
                     uexts+=$(this).val()+",";
                 });
                 $.ajax({
-                     url:'?m=ut-data&p=mysql&do=mysql-edit',
+                     url:'<{url=>Link("ut-data","mysql","do=mysql-edit")}>',
                      type:"post",
                      data:{
                          'u_table':u_table,

@@ -60,7 +60,7 @@
                                                                     QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
                                                                         echo"已安装";
                                                                     else:
-                                                                        echo"<a style='color:green;' href='?m=ut-module&p=module&do=install&mid={return=>$rows->mid}&t=g'>安装模块</a>";
+                                                                        echo"<a style='color:green;' href='".usualtool\Lib\Route::Link("ut-module","module","do=install&mid={return=>$rows->mid}&t=g")."'>安装模块</a>";
                                                                     endif;
                                                                 }>
                                                                 </p>
@@ -96,7 +96,7 @@
                                                 if(usualtool\Lib\Data::QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
                                                     echo"已安装";
                                                 else:
-                                                    echo"<a href='?m=ut-module&p=module&do=install&mid={return=>$rows->mid}&t=b' class='text-blue'>安装</a>";
+                                                    echo"<a href='".usualtool\Lib\Route::Link("ut-module","module","do=install&mid={return=>$rows->mid}&t=b")."' class='text-blue'>安装</a>";
                                                 endif;
                                                 }>
                                             </td>
@@ -134,7 +134,7 @@
                                                                 if(usualtool\Lib\Data::QueryData("cms_module","","mid='{return=>$rows->mid}'","","")["querynum"]>0):
                                                                     echo"已安装";
                                                                 else:
-                                                                    echo"<a href='?m=ut-module&p=module&do=install&mid={return=>$rows->mid}&t=s'>安装模块</a>";
+                                                                    echo"<a href='".usualtool\Lib\Route::Link("ut-module","module","do=install&mid={return=>$rows->mid}&t=s")."'>安装模块</a>";
                                                                 endif;
                                                             }>
                                                             </p>

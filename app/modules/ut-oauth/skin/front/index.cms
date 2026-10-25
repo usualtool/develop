@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card-header"><h5>我的账户</h5></div>
         <div class="card-body">
-            <form action="?m=ut-oauth&do=update" method="post">
+            <form action="<{url=>Link("ut-oauth","","do=update")}>" method="post">
             <{loop=>$data $rows}>
                 <div class="form-group row mb-3">
                   <div class="col-md-3">

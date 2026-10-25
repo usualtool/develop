@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=<{$module}>"><{$title}></a>
+                            <a href="<{url=>Link($module)}>"><{$title}></a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -25,7 +25,7 @@
                     </ul>
                 </div>
                 <div class="card">
-                    <form action="?m=ut-system&p=search&do=update" method="post" name="form">
+                    <form action="<{url=>Link("ut-system","search","do=update")}>" method="post" name="form">
                     <div class="card-body">
                         <div class="form-group">
                             <label for="largeInput"><strong>全库搜索设置说明</strong></label><br>
@@ -54,7 +54,7 @@
                               <{loop=>$data $rows}>
                                 <p id="t<{$rows->id}>">
                                   <input type="hidden" name="sid[]" value="<{$rows->id}>" />
-                                  <a href="?m=<{$module}>&p=search&do=del&id=<{$rows->id}>")>删除</a> 表名: <input type="text" name="sdb[]" class="inpMain" style="width:15%;" value="<{$rows->dbs}>"> - 
+                                  <a href="<{url=>Link($module,"search","do=del&id=".$rows["id"])}>">删除</a> 表名: <input type="text" name="sdb[]" class="inpMain" style="width:15%;" value="<{$rows->dbs}>"> - 
                                   字段: <input type="text" name="sfield[]" class="inpMain" style="width:15%;" value="<{$rows->fields}>"> - 
                                   条件: <input type="text" name="swhere[]" class="inpMain" style="width:15%;" value="<{$rows->wheres}>"> - 
                                   路径: <input type="text" name="spage[]" class="inpMain" style="width:15%;" value="<{$rows->pages}>"><br>

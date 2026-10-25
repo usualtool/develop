@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=ut-template"><{$title}></a>
+                            <a href="<{url=>Link("ut-template")}>"<{$title}></a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                    <form action="?m=ut-template&p=template_view&do=save" method="post">
+                    <form action="<{url=>Link("ut-template","template_view","do=save")}>" method="post">
                        <input type="hidden" name="d" value="<{$d}>">
                        <{if is_file($file)}>
                            <div class="mb-2"><{$d}></div>

@@ -1,8 +1,8 @@
 <?php
 use usualtool\Oauth\Oauth;
-$oauth = new Oauth();
-$path = $_GET['route'] ?? '';
-switch ($path) {
+$oauth=new Oauth();
+$path=$_GET['route'] ?? '';
+switch($path){
     case 'authorize':
         $oauth->Authorize();
         break;

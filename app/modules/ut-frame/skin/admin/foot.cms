@@ -31,14 +31,14 @@
         }>
         <script>
         if(getcookie("Lock")==1){
-            window.location.href = "?p=lock&u=<{php=>echo$param;}>";
+            window.location.href = "<{php=>echo usualtool\Lib\Route::Link("ut-frame","lock","u=".$param);}>";
         }else{
             var timer;
             window.onload = document.onmousemove = document.onkeydown = function () {
                 clearTimeout(timer);
                 timer = setTimeout(function () {
                     setcookie("Lock",1);
-                    window.location.href = "?p=lock&u=<{php=>echo$param;}>";
+                    window.location.href = "<{php=>echo usualtool\Lib\Route::Link("ut-frame","lock","u=".$param);}>";
                 },5*60*1000);
             }
         }

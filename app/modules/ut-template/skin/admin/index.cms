@@ -24,8 +24,8 @@
                 <div class="card">
                     <div class="card-body">
                         模板引擎方式：
-                        <a href="?m=ut-template&p=index&do=module">模块化模板</a> | 
-                        <a href="?m=ut-template&p=index&do=template">整站模板工程</a>
+                        <a href="<{url=>Link("ut-template","index","do=module")}>">模块化模板</a> | 
+                        <a href="<{url=>Link("ut-template","index","do=template")}>">整站模板工程</a>
                     </div>
                 </div>
                 <div class="row">
@@ -41,7 +41,7 @@
                                 <li class="feed-item feed-item-warning">
                                     <time class="date"><{$key}></time>
                                     <{loop=>$val $v}>
-                                        <span class="text"><a href="?m=ut-template&p=template_view&d=<{php=>echo return=>$key."|skin|front|".str_replace(".cms","_cms",return=>$v);}>"><{$v}></a></span>
+                                        <span class="text"><a href="<{php=>echo usualtool\Lib\Route::Link("ut-template","template_view","d=".return=>$key."|skin|front|".str_replace(".cms","_cms",return=>$v));}>"><{$v}></a></span>
                                     <{/loop}>
                                 </li>
                                 <{/loop}>
@@ -60,7 +60,7 @@
                                 <li class="feed-item feed-item-warning">
                                     <time class="date"><{$key}></time>
                                     <{loop=>$val $v}>
-                                        <span class="text"><a href="?m=ut-template&p=template_view&d=<{php=>echo return=>$key."|skin|admin|".str_replace(".cms","_cms",return=>$v);}>"><{$v}></a></span>
+                                        <span class="text"><a href="<{php=>echo usualtool\Lib\Route::Link("ut-template","template_view","d=".return=>$key."|skin|admin|".str_replace(".cms","_cms",return=>$v));}>"><{$v}></a></span>
                                     <{/loop}>
                                 </li>
                                 <{/loop}>
@@ -84,15 +84,15 @@
                                     <{$rows->title}>(<{$rows->lang}>)<br/>
                                     <font class="mr-2">
                                     <{if $rows["makefront"]==0}>
-                                    <a href="?m=ut-template&p=index&do=front&tempid=<{$rows->tid}>">设为前端</a>
+                                    <a href="<{url=>Link("ut-template","index","do=front&tempid=".$rows["tid"])}>">设为前端</a>
                                     <{else}>
-                                    <a href="?m=ut-template&p=index&do=unfront&tempid=<{$rows->tid}>" style="color:red;">取消前端</a>
+                                    <a href="<{url=>Link("ut-template","index","do=unfront&tempid=".$rows["tid"])}>" style="color:red;">取消前端</a>
                                     <{/if}></font> | 
                                     <font class="mr-2">
                                     <{if $rows["makeadmin"]==0}>
-                                    <a href="?m=ut-template&p=index&do=admin&tempid=<{$rows->tid}>">设为后端</a>
+                                    <a href="<{url=>Link("ut-template","index","do=admin&tempid=".$rows["tid"])}>">设为后端</a>
                                     <{else}>
-                                    <a href="?m=ut-template&p=index&do=unadmin&tempid=<{$rows->tid}>" style="color:red;">取消后端</a>
+                                    <a href="<{url=>Link("ut-template","index","do=unadmin&tempid=".$rows["tid"])}>" style="color:red;">取消后端</a>
                                     <{/if}></font>
                                     </span>
                                 </li>

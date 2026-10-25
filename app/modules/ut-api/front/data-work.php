@@ -28,20 +28,20 @@ $diag = array(
 $todayItems = array();
 $firstLines = array();
 $lineCount  = 0;
-if (!function_exists('ParseErr')) {
+if(!function_exists('ParseErr')){
     function ParseErr($rest){
         $level = 'UNKNOWN';
         $msg   = $rest;
-        if (preg_match('/^PHP\s+(Fatal error|Parse error|Recoverable fatal error|Warning|Notice|Deprecated|Strict Standards|Exception|Error)\s*:\s*(.*)$/i', $rest, $lv)) {
+        if(preg_match('/^PHP\s+(Fatal error|Parse error|Recoverable fatal error|Warning|Notice|Deprecated|Strict Standards|Exception|Error)\s*:\s*(.*)$/i', $rest, $lv)){
             $level = strtoupper($lv[1]);
             $msg   = trim($lv[2]);
         }
         return array($level, mb_substr($msg, 0, 300));
     }
 }
-if (!function_exists('Settle')) {
+if(!function_exists('Settle')){
     function Settle($cur, $today, $maxItems, &$todayItems){
-        if ($cur['date'] === $today && count($todayItems) < $maxItems) {
+        if($cur['date'] === $today && count($todayItems) < $maxItems){
             $todayItems[] = array(
                 'time'    => $cur['time'],
                 'level'   => $cur['level'],
@@ -51,20 +51,20 @@ if (!function_exists('Settle')) {
         }
     }
 }
-if ($diag['readable']) {
+if($diag['readable']){
     $fh = @fopen($logFile, 'rb');
-    if ($fh) {
+    if($fh){
         $cur = null;
-        while (($raw = fgets($fh)) !== false) {
+        while (($raw = fgets($fh)) !== false){
             $lineCount++;
             $line = rtrim($raw, "\r\n");
-            if ($debug && count($firstLines) < 3) {
+            if($debug && count($firstLines) < 3){
                 $firstLines[] = mb_substr($line, 0, 200);
             }
-            if (preg_match('/\[(\d{2}-[A-Za-z]{3}-\d{4})\s+(\d{2}:\d{2}:\d{2})\s*([^\]]*)\]/', $line, $m, PREG_OFFSET_CAPTURE)) {
+            if(preg_match('/\[(\d{2}-[A-Za-z]{3}-\d{4})\s+(\d{2}:\d{2}:\d{2})\s*([^\]]*)\]/', $line, $m, PREG_OFFSET_CAPTURE)){
                 $end  = $m[0][1] + strlen($m[0][0]);
                 $rest = trim(substr($line, $end));
-                if ($cur !== null) {
+                if($cur !== null){
                     Settle($cur, $today, $maxItems, $todayItems);
                 }
                 $p = ParseErr($rest);
@@ -75,20 +75,19 @@ if ($diag['readable']) {
                     'message' => $p[1],
                     'stack'   => '',
                 );
-            } else {
-                if ($cur !== null && $line !== '' && strlen($cur['stack']) < 2000) {
+            } else{
+                if($cur !== null && $line !== '' && strlen($cur['stack']) < 2000){
                     $cur['stack'] .= $line . "\n";
                 }
             }
         }
-        if ($cur !== null) {
+        if($cur !== null){
             Settle($cur, $today, $maxItems, $todayItems);
         }
-
         fclose($fh);
     }
 }
-if (!function_exists('MysqlInfo')) {
+if(!function_exists('MysqlInfo')){
     function MysqlInfo(){
         $out = array(
             'tables'   => 0,
@@ -104,30 +103,30 @@ if (!function_exists('MysqlInfo')) {
                        IFNULL(SUM(INDEX_LENGTH),0) AS i
                 FROM information_schema.TABLES
                 WHERE TABLE_SCHEMA = DATABASE()";
-        try {
+        try{
             $res = Data::JoinQuery($sql);
-        } catch (Throwable $e) {
+        } catch (Throwable $e){
             $out['error'] = $e->getMessage();
             return $out;
         }
         $row = array();
-        if (is_array($res)) {
-            if (isset($res['querydata'][0]) && is_array($res['querydata'][0])) {
+        if(is_array($res)){
+            if(isset($res['querydata'][0]) && is_array($res['querydata'][0])){
                 $row = $res['querydata'][0];
-            } elseif (isset($res[0]) && is_array($res[0])) {
+            } elseif(isset($res[0]) && is_array($res[0])){
                 $row = $res[0];
-            } elseif (isset($res['t']) || isset($res['T'])) {
+            } elseif(isset($res['t']) || isset($res['T'])){
                 $row = $res;
             }
         }
-        if (empty($row)) {
+        if(empty($row)){
             $out['error'] = '未取到统计结果';
             return $out;
         }
-        $get = function ($k) use ($row) {
-            if (isset($row[$k])) return $row[$k];
+        $get = function ($k) use ($row){
+            if(isset($row[$k])) return $row[$k];
             $uk = strtoupper($k);
-            if (isset($row[$uk])) return $row[$uk];
+            if(isset($row[$uk])) return $row[$uk];
             return 0;
         };
         $dataB  = (float)$get('d');
@@ -145,7 +144,7 @@ $error = array(
     "date"  => $today,
     "items" => $todayItems,
 );
-if ($debug) {
+if($debug){
     $diag['lines']  = $lineCount;
     $diag['first3'] = $firstLines;
     $error['diag']  = $diag;

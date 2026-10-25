@@ -2,24 +2,23 @@
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 /**
- * 连接数据库
- */
-$db=Data::GetDatabase();
-/**
  * 传递参数过程
  */
 $data=array();
-$result = $db->query("SHOW TABLES");
-while($arr = $result->fetch_assoc()){
+$result=Data::JoinQuery("SHOW TABLES");
+foreach($result["querydata"] as $arr){
     foreach($arr as $key=>$val){
+        if($key=="xu"){
+            continue;
+        }
         $rows='';
         $type='';
         $null='';
         $key='';
         $def='';
         $extra='';
-        $res=$db->query("desc ".$val);
-        while($row=mysqli_fetch_assoc($res)){ 
+        $res=Data::JoinQuery("desc ".$val);
+        foreach($res["querydata"] as $row){
             $rows.=$row['Field'].",";
             $type.=$row['Type'].",";
             $null.=$row['Null'].",";
@@ -34,7 +33,7 @@ while($arr = $result->fetch_assoc()){
         $keys=rtrim($key,",");
         $defs=rtrim($def,",");
         $extras=rtrim($extra,",");
-        $datanum=mysqli_num_rows($db->query("select * from `".$val."`"));
+        $datanum=Data::QueryNum("select * from `".$val."`");
         $data[]=array(
             "name"=>$val,
             "field"=>$cols,

@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 /**
  * 连接数据库
  */
@@ -41,7 +42,10 @@ function backup(){
     return $data;  
     }
 }
-$app->Runin("data",backup());
+$app->Runin(
+    array("data","dbtype"),
+    array(backup(),Data::GetDb())
+);
 /**
  * 载入模板
  */
@@ -87,7 +91,7 @@ if($do=="sql-backup"){
         while($row = mysqli_fetch_row($res)){
             $sqlStr = "INSERT INTO `".$val."` VALUES (";
             foreach($row as $zd){
-                $sqlStr .= "'".$zd."', ";
+                $sqlStr .= isset($zd) ? "'".$db->real_escape_string($zd)."', " : "NULL, ";
             }
             $sqlStr = substr($sqlStr,0,strlen($sqlStr)-2);
             $sqlStr .= ")|UTSQL|\r\n";
@@ -96,29 +100,53 @@ if($do=="sql-backup"){
         mysqli_free_result($res);
         file_put_contents($to_file_name,"\r\n",FILE_APPEND);
     }
-    Inc::GoUrl("?m=ut-data&p=backup","SQL备份成功!");
+    Inc::GoUrl(Route::Link("ut-data","backup"),"SQL备份成功!");
 }
 /**
  * SQL文件还原
  */
 if($do=="sql-rev"){
-    $sqlfile=UTF_ROOT."/log/sql/".$_GET['sql']; 
+    $sqlname=basename($_GET['sql']);
+    if(!preg_match('/^[\w\-]+\.sql$/',$sqlname)):
+        Inc::GoUrl(Route::Link("ut-data","backup"),"SQL文件名非法!");
+    endif;
+    $sqlfile=UTF_ROOT."/log/sql/".$sqlname;
+    $revdir=realpath(UTF_ROOT."/log/sql");
+    $realpath=realpath($sqlfile);
+    if($revdir===false || $realpath===false || strpos($realpath,$revdir.DIRECTORY_SEPARATOR)!==0):
+        Inc::GoUrl(Route::Link("ut-data","backup"),"SQL文件不存在!");
+    endif;
     $sql=file_get_contents($sqlfile);
     $arr=explode('|UTSQL|', $sql);
+    mysqli_report(MYSQLI_REPORT_OFF);
     foreach ($arr as $value){
-        $db->query($value.';');
+        $value=trim($value);
+        if($value===""){
+            continue;
+        }
+        $db->multi_query($value.';');
+        while(mysqli_more_results($db)){
+            $db->next_result();
+            $res=$db->store_result();
+            if($res){
+                $res->free();
+            }
+        }
+        if($db->errno){
+            Inc::GoUrl(Route::Link("ut-data","backup"),"SQL还原中断: ".$db->error);
+        }
     }
-    Inc::GoUrl("?m=ut-data&p=backup","SQL还原执行成功!");
+    Inc::GoUrl(Route::Link("ut-data","backup"),"SQL还原执行成功!");
 }
 /**
  * SQL文件删除
  */
 if($do=="sql-del"){
-    $sql=str_replace("..","",$_GET['sql']);
+    $sql=basename($_GET['sql']);
     $sqlbak=UTF_ROOT."/log/sql/".$sql;
         if(file_exists($sqlbak)):
             Inc::UnlinkFile($sqlbak);
-            Inc::GoUrl("?m=ut-data&p=backup","SQL文件删除成功!");
+            Inc::GoUrl(Route::Link("ut-data","backup"),"SQL文件删除成功!");
         else:
             Inc::GoUrl("-1","SQL文件删除失败!");
         endif;

@@ -14,7 +14,7 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="?m=<{$module}>"><{$title}></a>
+                            <a href="<{url=>Link($module)}>"><{$title}></a>
                         </li>
                         <li class="separator">
                             <i class="fa fa-angle-double-right"></i>
@@ -52,7 +52,7 @@
                                         lang(选填):<input type="text" class="form-control input-square" id="lang" value="0">
                                     <{else if $do=="search"}>
                                         成功返回数据,失败返回<code>[{"error":1}]</code><br>
-                                        使用该接口需要提前进行 <a target="_blank" href="?m=ut-system&p=search">搜索设置</a><br>
+                                        使用该接口需要提前进行 <a target="_blank" href="<{url=>Link("ut-system","search")}>">搜索设置</a><br>
                                         GET数据:<br>
                                         keyword:<input type="text" class="form-control input-square" id="keyword" value="test">
                                     <{else if $do=="lang"}>
@@ -128,7 +128,7 @@
             var code=$("#code").val();
             jsonstr="action="+action+"&code="+code;
         <{/if}>
-        var posturl="<{$appurl}>/?m=ut-api&p=data-<{$do}>";
+        var posturl="<{$appurl}><{url=>Link("ut-api","data-".$do,"","front")}>";
         $.ajax({
             url: posturl,
             <{if $do=="handle" || $do=="query"}>
@@ -144,7 +144,7 @@
                 XMLHttpRequest.setRequestHeader("time",getnowdate());
                 XMLHttpRequest.setRequestHeader("token",token);
                 <{if $do=="handle"}>
-                XMLHttpRequest.setRequestHeader("secret","<{$secret}");
+                XMLHttpRequest.setRequestHeader("secret","<{$secret}>");
                 <{/if}>
             },
             success: function(res){

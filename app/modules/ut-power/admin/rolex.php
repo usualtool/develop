@@ -1,10 +1,11 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 /**
  * 写入模块数据
  */
-$app->Runin("module",Data::QueryData("cms_module","","bid>0","","")["querydata"]);
+$app->Runin("modlist",Data::QueryData("cms_module","","bid>0","","")["querydata"]);
 /**
  * 传递参数过程
  */
@@ -30,30 +31,30 @@ $app->Open("rolex.cms");
 if($do=="add"){
     if(Data::InsertData("cms_admin_role",array(
         "role"=>Inc::SqlCheck($_POST["role"]),
-        "module"=>Inc::SqlCheck(implode(",",$_POST["module"]))))):
-        Inc::GoUrl("?m=ut-power&p=role","创建成功!");
-    else:
+        "module"=>Inc::SqlCheck(implode(",",$_POST["module"]))))){
+        Inc::GoUrl(Route::Link("ut-power","role"),"创建成功!");
+    }else{
         Inc::GoUrl("-1","创建失败!");
-    endif;
+    }
 }
 if($do=="mon"){
     $id=Inc::SqlCheck($_POST["id"]);
     if(Data::UpdateData("cms_admin_role",array(
         "role"=>Inc::SqlCheck($_POST["role"]),
-        "module"=>Inc::SqlCheck(implode(",",$_POST["module"]))),"id='$id'")):
-        Inc::GoUrl("?m=ut-power&p=role","编辑成功!");
-    else:
+        "module"=>Inc::SqlCheck(implode(",",$_POST["module"]))),"id='$id'")){
+        Inc::GoUrl(Route::Link("ut-power","role"),"编辑成功!");
+    }else{
         Inc::GoUrl("-1","编辑失败!");
-    endif;
+    }
 }
 if($do=="del"){
-    if($id==1):
-        Inc::GoUrl("?m=ut-power&p=role","删除失败,第一条记录不可删除!");
-    else:
-        if(Data::DelData("cms_admin_role","id='$id'")):
-            Inc::GoUrl("?m=ut-power&p=role","删除成功!");
-        else:
+    if($id==1){
+        Inc::GoUrl(Route::Link("ut-power","role"),"删除失败,第一条记录不可删除!");
+    }else{
+        if(Data::DelData("cms_admin_role","id='$id'")){
+            Inc::GoUrl(Route::Link("ut-power","role"),"删除成功!");
+        }else{
             Inc::GoUrl("-1","删除失败!");
-        endif;
-    endif;
+        }
+    }
 }

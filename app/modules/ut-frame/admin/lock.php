@@ -1,7 +1,8 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
-$u=$_GET["u"];
+use usualtool\Lib\Route;
+$u=preg_replace('/[^A-Za-z0-9_\-\/\.]/','',$_GET["u"] ?? "");
 $app->Open("lock.cms");
 if($_GET["do"]=="login"){
     $password=Inc::SqlCheck($_POST["password"]);
@@ -14,9 +15,12 @@ if($_GET["do"]=="login"){
             $param=str_replace("---","/",$param);
             $param=str_replace("___","&",$param);
             $param=str_replace("__","=",$param);
+            if($param=="" || preg_match("#^(https?:|//)#i",$param)){
+                $param=Route::Link("ut-frame","index");
+            }
             Inc::GoUrl($param,"解锁成功!");
         }else{
-            Inc::GoUrl("?p=lock&u=".$u,"解锁失败!");
+            Inc::GoUrl("-1","解锁失败!");
         }
     }
 }

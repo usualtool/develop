@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 $do=$_GET["do"];
 function plugin($data){
     $plugin = array_filter($data, function($item) {
@@ -29,37 +30,37 @@ $app->Open("plugin.cms");
 if($do=="install"){
     $t=$_GET["t"];
     $pid=str_replace(".","",Inc::SqlCheck($_GET["pid"]));
-    if($t!="s"):
-        if($t=="g"):
-            $down=Inc::Auth($config["UTCODE"],$config["UTFURL"],"plugin-".$pid);
-        elseif($t=="b"):  
-            $down=Inc::Auth($config["UTCODE"],$config["UTFURL"],"pluginorder-".$pid);
-        endif;
+    if($t!="s"){
+        if($t=="g"){
+            $down=Inc::Auth("plugin-".$pid);
+        }elseif($t=="b"){
+            $down=Inc::Auth("pluginorder-".$pid);
+        }
         $downurl=Inc::StrSubstr("<downurl>","</downurl>",$down);
         $filename=basename($downurl);
         $res=Inc::SaveFile($downurl,APP_ROOT."/plugins",$filename,1);
-        if(!empty($res)):
-            Inc::Auth($config["UTCODE"],$config["UTFURL"],"plugindel-".str_replace(".zip","",$filename)."");
+        if(!empty($res)){
+            Inc::Auth("plugindel-".str_replace(".zip","",$filename));
             $zip=new ZipArchive;
-            if($zip->open(APP_ROOT."/plugins/".$filename)===TRUE): 
+            if($zip->open(APP_ROOT."/plugins/".$filename)===TRUE){
                 $zip->extractTo(APP_ROOT."/plugins/");
                 $zip->close();
                 unlink(APP_ROOT."/plugins/".$filename);
-            else:
+            }else{
                 Inc::GoUrl("-1","plugins目录775权限不足!");
-            endif;
-        else:
+            }
+        }else{
             Inc::GoUrl("-1","安装权限不足!");
-        endif;
-    endif;
-    if(is_dir(APP_ROOT."/plugins/".$pid."/assets")):
+        }
+    }
+    if(is_dir(APP_ROOT."/plugins/".$pid."/assets")){
         $assets_dir=OPEN_ROOT."/assets/plugins/".$pid;
-        if(!is_dir($assets_dir)):
+        if(!is_dir($assets_dir)){
             Inc::MakeDir($assets_dir);
-        endif;
+        }
         Inc::MoveDir(APP_ROOT."/plugins/".$pid."/assets",$assets_dir);
         Inc::DelDir(APP_ROOT."/plugins/".$pid."/assets");
-    endif;
+    }
     $pconfig=APP_ROOT."/plugins/".$pid."/usualtool.config";
     $plugins=file_get_contents($pconfig);
     $cate=Inc::StrSubstr("<cate>","</cate>",$plugins);
@@ -68,14 +69,14 @@ if($do=="install"){
     $ver=Inc::StrSubstr("<ver>","</ver>",$plugins);
     $description=Inc::StrSubstr("<description>","</description>",$plugins);
     $installsql=Inc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$plugins);
-    if(Data::QueryData("cms_plugin","","pid='$pid'","","1")["querynum"]>0):
+    if(Data::QueryData("cms_plugin","","pid='$pid'","","1")["querynum"]>0){
         Data::UpdateData("cms_plugin",array(
             "type"=>$cate,
             "auther"=>$auther,
             "title"=>$title,
             "ver"=>$ver,
             "description"=>$description),"pid='$pid'");
-    else:
+    }else{
         Data::InsertData("cms_plugin",array(
             "pid"=>$pid,
             "type"=>$cate,
@@ -83,14 +84,14 @@ if($do=="install"){
             "title"=>$title,
             "ver"=>$ver,
             "description"=>$description));
-    endif;
-    if($installsql=='0'):
-        Inc::GoUrl("?m=ut-plugin&p=plugin","成功安装插件!");
-    else:
-        if(Data::RunSql($installsql)):
-            Inc::GoUrl("?m=ut-plugin&p=plugin","成功安装插件!");
-        else:
+    }
+    if($installsql=='0'){
+        Inc::GoUrl(Route::Link("ut-plugin","plugin"),"成功安装插件!");
+    }else{
+        if(Data::RunSql($installsql)){
+            Inc::GoUrl(Route::Link("ut-plugin","plugin"),"成功安装插件!");
+        }else{
             Inc::GoUrl("-1","插件安装失败!");
-        endif;   
-    endif;
+        }
+    }
 }

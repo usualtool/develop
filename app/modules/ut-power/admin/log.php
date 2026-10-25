@@ -3,7 +3,7 @@ use usualtool\Lib\Data;
 /**
  * 获取数据
  */
-$pagelink="?m=".$m."&p=".$p;
+$pagelink="";
 $page=empty($_GET["page"]) ? 1 : $_GET["page"];
 $pagenum=10;
 $minid=$pagenum*($page-1);

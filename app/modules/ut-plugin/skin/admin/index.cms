@@ -42,8 +42,8 @@
                                                         <h5 class="card-title" style="font-size:16px;font-weight:bold;"><{$rows->title}></h5>
                                                         <p class="card-category"><{$rows->auther}></p>
                                                         <p class="card-category">
-                                                        <a href="?m=ut-plugin&p=plugin_view&pid=<{$rows->pid}>">使用</a> | 
-                                                        <a href="?m=ut-plugin&do=uninstall&pid=<{$rows->pid}>">卸载</a>
+                                                        <a href="<{url=>Link("ut-plugin","plugin_view","pid=".$rows["pid"])}>">使用</a> | 
+                                                        <a href="<{url=>Link("ut-plugin","","do=uninstall&pid=".$rows["pid"])}>">卸载</a>
                                                         </p>
                                                     </div>
                                                 </div>

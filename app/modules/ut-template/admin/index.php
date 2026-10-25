@@ -1,6 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
+use usualtool\Lib\Route;
 $do=Inc::SqlCheck($_GET["do"]);
 $data=Data::QueryData("cms_template","","","","")["querydata"];
 /**
@@ -26,11 +27,11 @@ if($do=="front" || $do=="admin"){
             Data::UpdateData("cms_template",array("makefront"=>1),"tid='$tempid'");
             $info = preg_replace("/TEMPFRONT=(.*)/","TEMPFRONT={$tempid}",$info);
             file_put_contents(UTF_ROOT."/.ut.config",$info);
-            if(is_dir($movedir)):
+            if(is_dir($movedir)){
                 $app->CreatBak($movedir);
                 Inc::MoveDir($movedir,UTF_ROOT);
-            endif;
-            Inc::GoUrl("?m=ut-template&p=index&do=template","设置成功!");
+            }
+            Inc::GoUrl(Route::Link("ut-template","index","do=template"),"设置成功!");
         }else{
             Inc::GoUrl("-1","设置失败!");
         }
@@ -39,11 +40,11 @@ if($do=="front" || $do=="admin"){
             Data::UpdateData("cms_template",array("makeadmin"=>1),"tid='$tempid'");
             $info = preg_replace("/TEMPADMIN=(.*)/","TEMPADMIN={$tempid}",$info);
             file_put_contents(UTF_ROOT."/.ut.config",$info);
-            if(is_dir($movedir)):
+            if(is_dir($movedir)){
                 $app->CreatBak($movedir);
                 Inc::MoveDir($movedir,UTF_ROOT);
-            endif;
-            Inc::GoUrl("?m=ut-template&p=index&do=template","设置成功!");
+            }
+            Inc::GoUrl(Route::Link("ut-template","index","do=template"),"设置成功!");
         }else{
             Inc::GoUrl("-1","设置失败!");
         }
@@ -61,7 +62,7 @@ if($do=="unfront" || $do=="unadmin"){
             $info = preg_replace("/TEMPFRONT=(.*)/","TEMPFRONT=0",$info);
             file_put_contents(UTF_ROOT."/.ut.config",$info);
             $app->Rollback($movedir);
-            Inc::GoUrl("?m=ut-template&p=index&do=template","取消成功!");
+            Inc::GoUrl(Route::Link("ut-template","index","do=template"),"取消成功!");
         }else{
             Inc::GoUrl("-1","取消失败!");
         }
@@ -70,7 +71,7 @@ if($do=="unfront" || $do=="unadmin"){
             $info = preg_replace("/TEMPADMIN=(.*)/","TEMPADMIN=0",$info);
             file_put_contents(UTF_ROOT."/.ut.config",$info);
             $app->Rollback($movedir);
-            Inc::GoUrl("?m=ut-template&p=index&do=template","取消成功!");
+            Inc::GoUrl(Route::Link("ut-template","index","do=template"),"取消成功!");
         }else{
             Inc::GoUrl("-1","取消失败!");
         }

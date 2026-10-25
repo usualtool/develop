@@ -1,7 +1,16 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
-if(isset($_SESSION['admin'])&&isset($_SESSION['admin_id'])&&!empty($_SESSION['admin'])&&!empty($_SESSION['admin_id'])):
+use usualtool\Lib\Route;
+if(isset($_SESSION['admin'])&&isset($_SESSION['admin_id'])&&!empty($_SESSION['admin'])&&!empty($_SESSION['admin_id'])){
+    if(($_SERVER["REQUEST_METHOD"] ?? "")=="POST"){
+        $selfhost=parse_url($config["APPURL"],PHP_URL_HOST);
+        $originhost=parse_url($_SERVER["HTTP_ORIGIN"] ?? "",PHP_URL_HOST);
+        $refererhost=parse_url($_SERVER["HTTP_REFERER"] ?? "",PHP_URL_HOST);
+        if($originhost!==$selfhost && $refererhost!==$selfhost){
+            Inc::GoUrl("-1","ERROR!");
+        }
+    }
     /**
     * 获取版本号并载入应用部分设置
     */
@@ -15,14 +24,8 @@ if(isset($_SESSION['admin'])&&isset($_SESSION['admin_id'])&&!empty($_SESSION['ad
     /**
      * 接收官方消息
      */
-    $webmsg=UTF_ROOT."/log/usualtool.log";
-    $msgdata=file_exists($webmsg) ? json_decode(file_get_contents($webmsg),true) : null;
-    if(!$msgdata || time()-strtotime($msgdata["time"])>86400):
-        $msg=Inc::Auth($config["UTCODE"],$config["UTFURL"],"message");
-        file_put_contents($webmsg,json_encode(["time"=>date("Y-m-d"),"message"=>$msg],JSON_UNESCAPED_UNICODE));
-    else:
-        $app->Runin("message", explode("|", $msgdata["message"]));
-    endif;
+    $message=Inc::Auth("message");
+    $app->Runin("message",explode("|",$message));
     /**
      * 底层模块
      * 除开UT-FRAME公共模块
@@ -46,15 +49,15 @@ if(isset($_SESSION['admin'])&&isset($_SESSION['admin_id'])&&!empty($_SESSION['ad
     $admin_roleid=$_SESSION['admin_roleid'];
     $admin_avatar=$_SESSION['admin_avatar'];
     $adminnum=Data::QueryData("cms_admin","","id='$admin_id' and username='$admin'")["querynum"];
-    if($adminnum!==1):
-        Inc::GoUrl("?p=login");
-    else:
+    if($adminnum!==1){
+        Inc::GoUrl(Route::Link("ut-frame","login"));
+    }else{
         $myrole=Data::QueryData("cms_admin_role","","id='$admin_roleid'","","")["querydata"][0];
         $app->Runin(array("admin_id","admin_role","admin_user","admin_avatar"),array($admin_id,$myrole["role"],$admin,$admin_avatar));
         if(!Inc::Contain($m,explode(",",$myrole["module"]))){
             Inc::GoUrl("-1","权限不足!");
         }
-    endif;
-else:
-    Inc::GoUrl("?p=login");
-endif;
+    }
+}else{
+    Inc::GoUrl(Route::Link("ut-frame","login"));
+}

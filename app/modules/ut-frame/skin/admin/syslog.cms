@@ -23,6 +23,7 @@
                                         </tr>
                                     <{/loop}>
                                 </table>
+                                <{page=>total,curpage,listnum,pagelink}>
                             </div>
                         </div>
                     </div>

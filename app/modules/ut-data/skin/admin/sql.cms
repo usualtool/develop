@@ -29,7 +29,7 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <form action="?m=ut-data&p=sql&do=sql" method="post" name="form" onSubmit="return checkform();">
+                        <form action="<{url=>Link("ut-data","sql","do=sql")}>" method="post" name="form" onSubmit="return checkform();">
                             <div class="form-group">
                                 <label for="disableinput">SQL语句</label>
                                 <textarea class="form-control" id="sql" name="sql" rows="5"><{post=>sql}></textarea>

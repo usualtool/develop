@@ -5,10 +5,13 @@ require'data-verify.php';
 $table=Inc::SqlCheck($_POST["table"]);
 $field=empty($_POST["field"]) ? "" : Inc::SqlCheck($_POST["field"]);
 $where=empty($_POST["where"]) ? "" : $_POST["where"];
+if(preg_match('/\b(union|select|insert|update|delete|drop|alter|truncate|outfile|load_file|information_schema)\b|--|\/\*|\*\/|#|;|\bsleep\s*\(|\bbenchmark\s*\(/i',$where)){
+    Inc::GoUrl('','[{"error":"Illegal Where"}]');
+}
 $limit=empty($_POST["limit"]) ? "" : Inc::SqlCheck($_POST["limit"]);
 $order=empty($_POST["order"]) ? "" : Inc::SqlCheck($_POST["order"]);
 $lg=empty($_POST["lang"]) ? 0 : Inc::SqlCheck($_POST["lang"]);
-if(Data::ModTable($table)):
+if(Data::ModTable($table)){
     $data=Data::QueryData(
         $table,
         $field,
@@ -18,7 +21,7 @@ if(Data::ModTable($table)):
         $lg
     );
     $querydata=$data["querydata"];
-    echo json_encode($querydata,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);	
-else:
-	echo'[{"error":1}]';
-endif;
+    echo json_encode($querydata,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
+}else{
+    echo'[{"error":1}]';
+}
