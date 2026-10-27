@@ -196,6 +196,15 @@ div.dataTables_paginate ul.pagination {
 	background-color: #eee !important;
 }
 
+.ut-pager .page-item {
+	flex: 0 0 auto;
+}
+
+.ut-pager .page-link {
+	white-space: nowrap;
+	padding: 0.4rem 0.6rem;
+}
+
 .ut-form {
 	margin-bottom: 1rem;
 }

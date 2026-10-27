@@ -2,7 +2,7 @@
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Lib\Route;
-require_once 'session.php';
+require_once dirname(__FILE__).'/'.'session.php';
 $app->Runin("data",$oauth["querydata"]);
 $app->Open("index.cms");
 if($_GET["do"]=="update"){

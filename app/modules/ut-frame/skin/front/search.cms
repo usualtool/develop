@@ -1,0 +1,56 @@
+<{include "$pubtemp/head.cms"}>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ut-search ut-search-page mb-3">
+                    <form action="<{url=>Link("ut-frame","search")}>" method="get">
+                        <input type="text" name="keyword" value="<{$keyword}>" placeholder="输入关键词搜索…">
+                        <button type="submit" aria-label="搜索">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2.5" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+                        </button>
+                    </form>
+                </div>
+                <div class="ut-result-box">
+                <{if empty($keyword)}>
+                <h5 class="pb-2 mb-3 border-bottom">
+                    <i class="fa fa-search text-primary"></i>
+                    请输入关键词
+                </h5>
+                <{/if}>
+                <{if !empty($keyword)}>
+                <h5 class="pb-2 mb-3 border-bottom">
+                    <i class="fa fa-search text-primary"></i>
+                    搜索"<{$keyword}>"，共 <{$searchnum}> 条结果
+                </h5>
+                <{/if}>
+                <{if !empty($keyword) && $searchnum==0}>
+                <p class="text-muted">没有找到相关内容，换个关键词试试。</p>
+                <{/if}>
+                <ul class="list-unstyled">
+                    <{loop=>$searchdata $rows}>
+                    <{php=>
+                    $q=array();
+                    parse_str(return=>$rows["thepage"],$q);
+                    $m=isset($q["m"])?$q["m"]:"";
+                    $p=isset($q["p"])?$q["p"]:"";
+                    $t=return=>$rows["title"];
+                    $c=mb_substr(trim(strip_tags(return=>$rows["content"])),0,140);
+                    echo '<li class="border-bottom pb-3 mb-3">';
+                        echo '<span class="mt-0 mb-1">';
+                            echo '<a class="text-dark" href="'.usualtool\Lib\Route::Link($m,$p,"id=".return=>$rows["id"]).'"><b>'.$t.'</b></a>';
+                        echo '</span>';
+                        echo '<p class="small text-muted mb-0"><i class="fa fa-folder"></i> '.$m.($c!=="" ? ' · '.$c : '').'</p>';
+                    echo '</li>';
+                    }>
+                    <{/loop}>
+                </ul>
+                </div>
+                <{if $total>1}>
+                <div class="mt-3">
+                    <{page=>total,curpage,listnum,pagelink}>
+                </div>
+                <{/if}>
+            </div>
+        </div>
+    </div>
+<{include "$pubtemp/foot.cms"}>

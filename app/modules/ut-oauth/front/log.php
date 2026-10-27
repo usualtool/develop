@@ -1,7 +1,7 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
-require_once 'session.php';
+require_once dirname(__FILE__).'/'.'session.php';
 $pagelink="";
 $page=empty($_GET["page"]) ? 1 : $_GET["page"];
 $pagenum=10;

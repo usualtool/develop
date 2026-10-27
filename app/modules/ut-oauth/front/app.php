@@ -2,7 +2,7 @@
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Lib\Route;
-require_once 'session.php';
+require_once dirname(__FILE__).'/'.'session.php';
 $role=Data::QueryData("oauth_scopes","","")["querydata"];
 $pagelink="";
 $page=empty($_GET["page"]) ? 1 : $_GET["page"];

@@ -14,13 +14,10 @@
                             <i class="fa fa-angle-double-right"></i>
                         </li>
                         <li class="nav-item">
-                            <a href="<{url=>Link($module)}>"><{$title}></a>
-                        </li>
-                        <li class="separator">
-                            <i class="fa fa-angle-double-right"></i>
+                            搜索
                         </li>
                         <li class="nav-item">
-                            搜索
+                            <{item=>$module,$backitem}>
                         </li>
                     </ul>
                 </div>

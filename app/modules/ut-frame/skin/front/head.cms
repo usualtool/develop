@@ -12,30 +12,21 @@
     <script src="<{$appurl}>/assets/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <div class="container-fluid bg-light mb-2"> 
-        <div class="row">
-            <nav class="container navbar navbar-expand-md navbar-light">
-                  <a class="navbar-brand" href="#"><img src="<{$appurl}>/assets/logo.png"></a>
-                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-                      <span class="navbar-toggler-icon"></span>
-                  </button>
-                <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">首页</a>
-                        </li>
-                    </ul>
-                </div>  
-                <div class="right">
-                    <a data-toggle="dropdown" href="#" class="text-dark"><i class="fa fa-language" aria-hidden="true"></i> <{lang=>lg}></a>
-                    <div class="dropdown-menu">
-                        <{loop=>$lang $row}>
-                        <a class="dropdown-item" href="javascript:void(0);" onclick="clicklang('<{$row}>')">
-                            <{lang=>set->speak,return=>$row}>
-                        </a>
-                        <{/loop}>
-                    </div>
+    <header class="ut-header">
+        <div class="ut-header-in">
+            <a class="ut-brand" href="<{$appurl}>"><img src="<{$appurl}>/assets/logo.png" alt="logo"></a>
+            <a class="ut-search-btn" href="<{url=>Link("ut-frame","search")}>" aria-label="搜索">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F26522" stroke-width="2.5" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+            </a>
+            <div class="right">
+                <a data-toggle="dropdown" href="javascript:void(0);" class="text-dark"><i class="fa fa-language" aria-hidden="true"></i> <{lang=>lg}></a>
+                <div class="dropdown-menu">
+                    <{loop=>$lang $row}>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="clicklang('<{$row}>')">
+                        <{lang=>set->speak,return=>$row}>
+                    </a>
+                    <{/loop}>
                 </div>
-            </nav>
+            </div>
         </div>
-    </div>
+    </header>

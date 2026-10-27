@@ -1,60 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Hello UsualTool Framework</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title><{$appname}></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="UsualTool Framework"/>
-    <meta name="Description" content="UsualTool Framework"/>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            width: 100%;
-            height: 100vh;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .framework{
-            width: 90%;
-            max-width: 800px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 5% 5%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .divider {
-            border: 0;
-            height: 1px;
-            background: linear-gradient(to right, transparent, #ddd, transparent);
-            margin: 15px 0;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        ul li {
-            line-height: 2.3
-        }
-        a {
-            color: #20a53a
-        }
-    </style>
+    <link href="<{$appurl}>/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<{$appurl}>/assets/css/fontawesome.min.css" rel="stylesheet">
+    <link href="<{$appurl}>/assets/css/default.css" rel="stylesheet">
+    <script src="<{$appurl}>/assets/js/jquery.min.js"></script>
+    <script src="<{$appurl}>/assets/js/popper.min.js"></script>
+    <script src="<{$appurl}>/assets/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <div class="framework">
-        <p>Tip: UsualTool Framework successful installation.</p>
-        <hr class="divider">
-        <p><img src="/assets/logo.png" style="max-width: 100%;"></p>
-        <ul>
-            <li>Repository 1: <a target="_blank" href="https://gitee.com/usualtool">https://gitee.com/usualtool</a></li>
-            <li>Repository 2: <a target="_blank" href="https://github.com/usualtool">https://github.com/usualtool</a></li>
-            <li>UsualTool Framework is suitable for Apache2 protocol.</li>
-        </ul>
+<section class="ut-hero">
+    <div class="ut-hero-in">
+        <span class="ut-hero-tag">UsualTool Framework Develop</span>
+        <h1>可视包开发<br><span>像搭积木一样简单</span></h1>
+        <div class="ut-hero-line"></div>
+        <p class="ut-hero-sub">
+            <span class="mr-2">简约而不平凡</span>
+            梦想在此启航
+        </p>
     </div>
+</section>
 </body>
 </html>

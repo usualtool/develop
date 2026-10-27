@@ -22,7 +22,7 @@
                         <li class="nav-item">
                             创建/编辑角色
                         </li>
-                        <li class="nav-item pl-3 pr-3">
+                        <li class="nav-item">
                             <{item=>$module,$backitem}>
                         </li>
                     </ul>

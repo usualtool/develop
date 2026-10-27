@@ -1,6 +1,6 @@
-    <div class="container mt-3">
-        <div class="border-top pt-2" style="font-size:13px;color:#666;">
-            <p><{$appname}></p>
+    <div class="container">
+        <div class="text-center pt-3 pb-3" style="font-size:0.8rem;color:#999">
+            版权所有 &copy; <{php=>echo date("Y");}> <{$appname}>
         </div>
     </div>
     <script src="<{$appurl}>/assets/js/plugin/plupload/plupload.min.js"></script>
