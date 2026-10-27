@@ -36,7 +36,7 @@ $CONFIG = [
     'form'     => $_form_ ?? '',
     'regc_n'   => class_exists('usualtool\\Lib\\Inc') ? count((array) \usualtool\Lib\Inc::GetConfig()) : -1,
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES).PHP_EOL, FILE_APPEND);
-error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
 @ini_set('display_errors', '0');
 @ini_set('log_errors', '1');
 @ini_set('html_errors', '0');
