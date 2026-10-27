@@ -187,26 +187,25 @@
                         </div>
                     </div>
                     <ul class="nav">
-                        <li class="nav-item <{php=>if($_COOKIE["Nav"]=="ut-frame"):echo"active";endif;}>">
-                            <a href="<{$develop}>/" onclick="clicknav('ut-frame')">
+                        <li class="nav-item <{php=>if(return=>$module=="ut-frame"):echo"active";endif;}>">
+                            <a href="<{$develop}>/">
                                 <i class="fas fa-home"></i>
                                 <p>首页</p>
                             </a>
                         </li>
                         <{php=>
-                            if(!empty($_COOKIE["Nav"]) && $_COOKIE["Nav"]!="ut-frame"):
-                                $this_nav=$_COOKIE["Nav"];
+                            if(return=>$module!="ut-frame"):
+                                $this_nav=return=>$module;
                                 $this_nav_data=usualtool\Lib\Data::QueryData("cms_module","","mid='$this_nav'")["querydata"][0];
                                 echo"<li class=\"nav-item\" style=\"border:1px dashed #eee;width:90%;margin:auto;\">";
-                                    echo"<a class=\"text-danger border-bottom bg-light\"><span class=\"text-dark mr-2\">当前</span>".$this_nav_data["modname"]."<span class=\"fas fa-eraser
-                             text-dark ml-auto\" title=\"清除\" onclick=\"clearnav()\"></span></a>";
+                                    echo"<a class=\"text-danger border-bottom bg-light\"><span class=\"text-dark mr-2\">当前</span>".$this_nav_data["modname"]."</a>";
                                 if(!empty($this_nav_data["backitem"])):
                                                 echo"<ul class=\"nav nav-collapse\" style=\"padding-bottom:0px;padding-top:0px;margin-bottom:0px\">\r\n";
                                                     $this_backitem=explode(',',$this_nav_data["backitem"]);
                                                     for($j=0;$j<count($this_backitem);$j++):
                                                         $this_sm_nav=explode(':',$this_backitem[$j]);
                                                         echo"<li>\r\n";
-                                                            echo"<a href='".usualtool\Lib\Route::Link($this_nav_data["mid"],$this_sm_nav[1])."' onclick=\"clicknav('".$this_nav_data["mid"]."')\" style=\"padding:5px 25px !important;\">\r\n";
+                                                            echo"<a href='".usualtool\Lib\Route::Link($this_nav_data["mid"],$this_sm_nav[1])."' style=\"padding:5px 25px !important;\">\r\n";
                                                                 echo"<span class=\"sub-item\">".$this_sm_nav[0]."</span>\r\n";
                                                             echo"</a>\r\n";
                                                         echo"</li>\r\n";
@@ -223,20 +222,20 @@
                             </li>
                             <{loop=>$custmods as $rows}>
                                 <{if empty($rows["backitem"])}>
-                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
-                                        <a href="<{url=>Link($rows["mid"])}>" onclick="clicknav('<{$rows->mid}>')">
+                                    <li class="nav-item <{php=>if(return=>$module==return=>$rows->mid):echo"active";endif;}>">
+                                        <a href="<{url=>Link($rows["mid"])}>">
                                                 <i class="fas fa-sort"></i>
                                                 <p><{$rows->modname}></p>
                                         </a>
                                     </li>
                                 <{else}>
-                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"submenu";endif;}>">
+                                    <li class="nav-item <{php=>if(return=>$module==return=>$rows->mid):echo"submenu";endif;}>">
                                         <a data-toggle="collapse" href="#<{$rows->mid}>">
                                             <i class="fas fa-sort"></i>
                                             <p><{$rows->modname}></p>
                                             <span class="caret"></span>
                                         </a>
-                                        <div class="collapse <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
+                                        <div class="collapse <{php=>if(return=>$module==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
                                             <ul class="nav nav-collapse">
                                             <{php=>
                                             $navs=explode(",",return=>$rows->backitem);
@@ -245,7 +244,7 @@
                                             $navurl=explode(":",$navs[$k])[1];
                                             }>
                                                 <li>
-                                                    <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>" onclick="clicknav('<{$rows->mid}>')">
+                                                    <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>">
                                                         <span class="sub-item"><{php=>echo$navtitle}></span>
                                                     </a>
                                                 </li>
@@ -263,8 +262,8 @@
                             </li>
                             <{loop=>$modules as $rows}>
                                 <{if empty($rows["backitem"])}>
-                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"active";endif;}>">
-                                        <a href="<{url=>Link($rows["mid"])}>" onclick="clicknav('<{$rows->mid}>')">
+                                    <li class="nav-item <{php=>if(return=>$module==return=>$rows->mid):echo"active";endif;}>">
+                                        <a href="<{url=>Link($rows["mid"])}>">
                                             <{if $rows["mid"]=="ut-cac"}>
                                                 <i class="fas fa-chalkboard"></i>
                                             <{else}>
@@ -274,7 +273,7 @@
                                         </a>
                                     </li>
                                 <{else}>    
-                                    <li class="nav-item <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"submenu";endif;}>">
+                                    <li class="nav-item <{php=>if(return=>$module==return=>$rows->mid):echo"submenu";endif;}>">
                                         <a data-toggle="collapse" href="#<{$rows->mid}>">
                                             <{if $rows["mid"]=="ut-module"}>
                                                 <i class="fa fa-cubes"></i>
@@ -298,7 +297,7 @@
                                             <p><{$rows->modname}></p>
                                             <span class="caret"></span>
                                         </a>
-                                        <div class="collapse <{php=>if($_COOKIE["Nav"]==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
+                                        <div class="collapse <{php=>if(return=>$module==return=>$rows->mid):echo"show";endif;}>" id="<{$rows->mid}>">
                                             <ul class="nav nav-collapse">
                                             <{php=>
                                             $navs=explode(",",return=>$rows->backitem);
@@ -307,7 +306,7 @@
                                             $navurl=explode(":",$navs[$k])[1];
                                             }>
                                                 <li>
-                                                    <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>" onclick="clicknav('<{$rows->mid}>')">
+                                                    <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>">
                                                         <span class="sub-item"><{php=>echo$navtitle}></span>
                                                     </a>
                                                 </li>
