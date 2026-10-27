@@ -45,7 +45,7 @@
                                         <td><{$rows->role}></td>
                                         <td><{$rows->module}></td>
                                         <td>
-                                        <a href="<{url=>Link("ut-power","rolex","id=".$rows["id"])}>"编辑</a> | 
+                                        <a href="<{url=>Link("ut-power","rolex","id=".$rows["id"])}>">编辑</a> | 
                                         <a href="<{url=>Link("ut-power","rolex","id=".$rows["id"]."&do=del")}>">删除</a>
                                         </td>
                                     </tr>
