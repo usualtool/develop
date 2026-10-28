@@ -11531,7 +11531,8 @@ div.table-responsive > div.dataTables_wrapper > div.row > div[class^="col-"]:fir
 	white-space: nowrap;
 }
 
-.ut-item-menu.show .ut-item-menu-small {
+.ut-item-menu.show .ut-item-menu-small,
+.ut-item-menu.submenu .ut-item-menu-small {
 	display: block;
 }
 

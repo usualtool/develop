@@ -537,7 +537,8 @@ input.ut-button[type="file"]::file-selector-button {
 	white-space: nowrap;
 }
 
-.ut-item-menu.show .ut-item-menu-small {
+.ut-item-menu.show .ut-item-menu-small,
+.ut-item-menu.submenu .ut-item-menu-small {
 	display: block;
 }
 
