@@ -204,6 +204,7 @@
                                                     $this_backitem=explode(',',$this_nav_data["backitem"]);
                                                     for($j=0;$j<count($this_backitem);$j++):
                                                         $this_sm_nav=explode(':',$this_backitem[$j]);
+                                                        if(!isset($this_sm_nav[1])){$this_sm_nav[1]="";}
                                                         echo"<li>\r\n";
                                                             echo"<a href='".usualtool\Lib\Route::Link($this_nav_data["mid"],$this_sm_nav[1])."' style=\"padding:5px 25px !important;\">\r\n";
                                                                 echo"<span class=\"sub-item\">".$this_sm_nav[0]."</span>\r\n";
@@ -241,7 +242,7 @@
                                             $navs=explode(",",return=>$rows->backitem);
                                             for($k=0;$k<count($navs);$k++):
                                             $navtitle=explode(":",$navs[$k])[0];
-                                            $navurl=explode(":",$navs[$k])[1];
+                                            $navurl=explode(":",$navs[$k])[1] ?? "";
                                             }>
                                                 <li>
                                                     <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>">
@@ -303,7 +304,7 @@
                                             $navs=explode(",",return=>$rows->backitem);
                                             for($k=0;$k<count($navs);$k++):
                                             $navtitle=explode(":",$navs[$k])[0];
-                                            $navurl=explode(":",$navs[$k])[1];
+                                            $navurl=explode(":",$navs[$k])[1] ?? "";
                                             }>
                                                 <li>
                                                     <a href="<{php=>echo usualtool\Lib\Route::Link(return=>$rows->mid,$navurl);}>">
