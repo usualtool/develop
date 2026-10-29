@@ -3,7 +3,7 @@ use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 require'data-verify.php';
 $table=Inc::SqlCheck($_POST["table"]);
-$where=$_POST["where"];
+$where=$_POST["where"] ?? "";
 if(preg_match('/\b(union|select|insert|update|delete|drop|alter|truncate|outfile|load_file|information_schema)\b|--|\/\*|\*\/|#|;|\bsleep\s*\(|\bbenchmark\s*\(/i',$where)){
     echo'[{"error":"Illegal Where"}]';
     return;
