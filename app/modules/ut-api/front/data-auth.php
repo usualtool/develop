@@ -1,27 +1,36 @@
 <?php
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
-use usualtool\Wechat\Wechat;
+use usualtool\Wechat\MiniPro;
 use usualtool\Aliopen\Aliopen;
 require'data-verify.php';
+/*
+ * 小程序授权登录等相关
+ * 支持微信、支付宝
+**/
 if(Data::ModTable("cms_routine")){
     $set=Data::QueryData("cms_routine","","","","1")["querydata"][0];
     $code=Inc::SqlCheck($_GET["code"]);
     $action=Inc::SqlCheck($_GET["action"]);
     if($action=="wechat"){
-        $result=file_get_contents("https://api.weixin.qq.com/sns/jscode2session?appid=".$set["wxrteid"]."&secret=".$set["wxrtesecret"]."&js_code=".$code."&grant_type=authorization_code");
+        $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
+        $result=json_encode($minipro->ChkLogin($code));
     }elseif($action=="wechat-crypt"){
         $encrypteddata=$_POST["encrypteddata"];
         $iv=$_POST["iv"];
         $openid=Inc::SqlCheck($_POST["openid"]);
         $thirdkey=$_POST["thirdkey"];
-        $wxin=new Wechat($set["wxrteid"],$set["wxrtesecret"]);
-        $errcode=$wxin->DecryptData($thirdkey,$encrypteddata,$iv,$data);
+        $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
+        $errcode=$minipro->DecryptData($thirdkey,$encrypteddata,$iv,$data);
         if($errcode==0){
             $result=$data;
         }else{
             $result=$errcode;
         }
+    }elseif($action=="wechat-phone"){
+        $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
+        $res=$minipro->GetPhone($_POST["code"]);
+        $result=(isset($res["errcode"]) && $res["errcode"]==0 && isset($res["phone_info"])) ? json_encode($res["phone_info"]) : json_encode($res);
     }elseif($action=="alipay"){
         $ali=new Aliopen($set["alrteid"],$set["alapppubkey"],$set["alpaypubkey"]);
         $result=$ali->ApiRequest("alipay.system.oauth.token",array("grant_type"=>"authorization_code","code"=>$code));
