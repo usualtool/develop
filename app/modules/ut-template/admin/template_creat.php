@@ -1,21 +1,34 @@
 <?php
+namespace Controller\Ut_template\Admin;
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Lib\Route;
-$do=$_GET["do"];
-/**
- * 获取已安装模块
- */
-$app->Runin("modlist",Data::QueryData("cms_module","","bid>0","id asc","")["querydata"]);
-/**
- * 载入模板
- */
-$app->Open("template_creat.cms");
-if($do=="save"){
-    $module=Inc::SqlCheck($_POST["module"]);
-    $skin=Inc::SqlCheck($_POST["skin"]);
-    $page=Inc::SqlCheck($_POST["page"]);
-    $content=htmlspecialchars_decode($_POST["content"]);
-    file_put_contents(APP_ROOT."/modules/".$module."/skin/".$skin."/".$page,$content);
-    Inc::GoUrl(Route::Link("ut-template","template_creat"),"创建模板成功!");
+class Template_creat{
+    private $app;
+    public function __construct(){
+        global $app;
+        $this->app=$app;
+    }
+    public function __call($name,$args){
+        $this->index();
+    }
+    public function index(){
+        $do=$_GET["do"] ?? "";
+        /**
+         * 获取已安装模块
+         */
+        $this->app->Runin("modlist",Data::QueryData("cms_module","","bid>0","id asc","")["querydata"]);
+        /**
+         * 载入模板
+         */
+        $this->app->Open("template_creat.cms");
+        if($do=="save"){
+            $module=Inc::SqlCheck($_POST["module"] ?? "");
+            $skin=Inc::SqlCheck($_POST["skin"] ?? "");
+            $page=Inc::SqlCheck($_POST["page"] ?? "");
+            $content=htmlspecialchars_decode($_POST["content"] ?? "");
+            file_put_contents(APP_ROOT."/modules/".$module."/skin/".$skin."/".$page,$content);
+            Inc::GoUrl(Route::Link("ut-template","template_creat"),"创建模板成功!");
+        }
+    }
 }

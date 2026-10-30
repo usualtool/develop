@@ -1,74 +1,79 @@
 <?php
+namespace Controller\Ut_data\Admin;
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
-/**
- * 传递参数过程
- */
-$do=Inc::SqlCheck($_GET["do"]);
-if($do=="mysql-sql"){
-    $sql=$_POST['sql'];
-    $res=Data::RunSql($sql);
-    echo 1;
-}
-if($do=="mysql-edit"){
-    $table=$_POST["u_table"];
-    $oldcols=$_POST["u_cols"];
-    //$keys=$_POST["key"];
-    $cols=$_POST["col"];
-    $types=$_POST["type"];
-    $nulls=$_POST["null"];
-    $defs=$_POST["def"];
-    $exts=$_POST["ext"];
-    $oldcol=explode(",",$oldcols);
-    $col=explode(",",$cols);
-    $type=explode(",",$types);
-    $null=explode(",",$nulls);
-    $def=explode(",",$defs);
-    $ext=explode(",",$exts);
-    for($i=0;$i<count($oldcol);$i++){
-        if(strtoupper($null[$i])=="YES"){
-            $thenull="NULL";
-        }else{
-            $thenull="NOT NULL";
-        }
-        if(!empty($def[$i])){
-            $thedef="DEFAULT '".$def[$i]."'";
-        }else{
-            $thedef="";
-        }
-        if(!empty($ext[$i])){
-            $theext=strtoupper($ext[$i]);
-        }else{
-            $theext="";
-        }
-        $sql="ALTER TABLE `".$table."` CHANGE `".$oldcol[$i]."` `".$col[$i]."` ".strtoupper($type[$i])." ".$thenull." ".$thedef." ".$theext.";";
-        Data::RunSql($sql);
+class Mysql{
+    public function __call($name,$args){
+        $this->index();
     }
-    echo 1;
-}
-if($do=="mysql-add"){
-    $table=$_POST["u_table"];
-    $cols=$_POST["col"];
-    $types=$_POST["type"];
-    $nulls=$_POST["null"];
-    $defs=$_POST["def"];
-    $col=explode(",",$cols);
-    $type=explode(",",$types);
-    $null=explode(",",$nulls);
-    $def=explode(",",$defs);
-    for($i=0;$i<count($col);$i++){
-        if(strtoupper($null[$i])=="YES"){
-            $thenull="NULL";
-        }else{
-            $thenull="NOT NULL";
+    public function index(){
+        $do=Inc::SqlCheck($_GET["do"] ?? "");
+        if($do=="mysql-sql"){
+            $sql=$_POST['sql'] ?? "";
+            $res=Data::RunSql($sql);
+            echo 1;
         }
-        if(!empty($def[$i])){
-            $thedef="DEFAULT '".$def[$i]."'";
-        }else{
-            $thedef="";
+        if($do=="mysql-edit"){
+            $table=$_POST["u_table"] ?? "";
+            $oldcols=$_POST["u_cols"] ?? "";
+            //$keys=$_POST["key"];
+            $cols=$_POST["col"] ?? "";
+            $types=$_POST["type"] ?? "";
+            $nulls=$_POST["null"] ?? "";
+            $defs=$_POST["def"] ?? "";
+            $exts=$_POST["ext"] ?? "";
+            $oldcol=explode(",",$oldcols);
+            $col=explode(",",$cols);
+            $type=explode(",",$types);
+            $null=explode(",",$nulls);
+            $def=explode(",",$defs);
+            $ext=explode(",",$exts);
+            for($i=0;$i<count($oldcol);$i++){
+                if(strtoupper($null[$i])=="YES"){
+                    $thenull="NULL";
+                }else{
+                    $thenull="NOT NULL";
+                }
+                if(!empty($def[$i])){
+                    $thedef="DEFAULT '".$def[$i]."'";
+                }else{
+                    $thedef="";
+                }
+                if(!empty($ext[$i])){
+                    $theext=strtoupper($ext[$i]);
+                }else{
+                    $theext="";
+                }
+                $sql="ALTER TABLE `".$table."` CHANGE `".$oldcol[$i]."` `".$col[$i]."` ".strtoupper($type[$i])." ".$thenull." ".$thedef." ".$theext.";";
+                Data::RunSql($sql);
+            }
+            echo 1;
         }
-        $sql="ALTER TABLE `".$table."` ADD `".$col[$i]."` ".strtoupper($type[$i])." ".$thenull." ".$thedef.";";
-        Data::RunSql($sql);
+        if($do=="mysql-add"){
+            $table=$_POST["u_table"] ?? "";
+            $cols=$_POST["col"] ?? "";
+            $types=$_POST["type"] ?? "";
+            $nulls=$_POST["null"] ?? "";
+            $defs=$_POST["def"] ?? "";
+            $col=explode(",",$cols);
+            $type=explode(",",$types);
+            $null=explode(",",$nulls);
+            $def=explode(",",$defs);
+            for($i=0;$i<count($col);$i++){
+                if(strtoupper($null[$i])=="YES"){
+                    $thenull="NULL";
+                }else{
+                    $thenull="NOT NULL";
+                }
+                if(!empty($def[$i])){
+                    $thedef="DEFAULT '".$def[$i]."'";
+                }else{
+                    $thedef="";
+                }
+                $sql="ALTER TABLE `".$table."` ADD `".$col[$i]."` ".strtoupper($type[$i])." ".$thenull." ".$thedef.";";
+                Data::RunSql($sql);
+            }
+            echo 1;
+        }
     }
-    echo 1;
 }

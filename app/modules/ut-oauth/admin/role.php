@@ -1,33 +1,47 @@
 <?php
+namespace Controller\Ut_oauth\Admin;
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Lib\Route;
-$list=Data::JoinQuery("SHOW TABLES");
-$table=array_column($list['querydata'],'Tables_in_'.$config["MYSQL_DB"]);
-$data=Data::QueryData("oauth_scopes","","")["querydata"];
-$app->Runin(
-    array("table","data"),
-    array($table,$data)
-);
-$app->Open("role.cms");
-if($_GET["do"]=="creat"){
-    $title=Inc::SqlCheck($_POST["title"]);
-    $scope=Inc::SqlCheck($_POST["scope"]);
-    $dbtable=Inc::SqlCheck($_POST["dbtable"]);
-    if(empty($title) || empty($scope)){
-        Inc::GoUrl("-1","必填项不能为空");
+class Role{
+    private $app;
+    public function __construct(){
+        global $app;
+        $this->app=$app;
     }
-    if(Data::QueryData("oauth_scopes","","title='$title' or scope='$scope' or dbtable='$dbtable'")["querynum"]>0){
-        Inc::GoUrl("-1","中英文权限名称或数据表已使用过");
-    }else{
-        if(Data::InsertData("oauth_scopes",array(
-            "title"=>$title,
-            "scope"=>$scope,
-            "dbtable"=>$dbtable)
-        )){
-            Inc::GoUrl(Route::Link("ut-oauth","role"),"新增成功");
-        }else{
-            Inc::GoUrl("-1","新增失败");
+    public function __call($name,$args){
+        $this->index();
+    }
+    public function index(){
+        global $config;
+        $list=Data::JoinQuery("SHOW TABLES");
+        $table=array_column($list['querydata'],'Tables_in_'.$config["MYSQL_DB"]);
+        $data=Data::QueryData("oauth_scopes","","")["querydata"];
+        $this->app->Runin(
+            array("table","data"),
+            array($table,$data)
+        );
+        $this->app->Open("role.cms");
+        if(($_GET["do"] ?? "")=="creat"){
+            $title=Inc::SqlCheck($_POST["title"] ?? "");
+            $scope=Inc::SqlCheck($_POST["scope"] ?? "");
+            $dbtable=Inc::SqlCheck($_POST["dbtable"] ?? "");
+            if(empty($title) || empty($scope)){
+                Inc::GoUrl("-1","必填项不能为空");
+            }
+            if(Data::QueryData("oauth_scopes","","title='$title' or scope='$scope' or dbtable='$dbtable'")["querynum"]>0){
+                Inc::GoUrl("-1","中英文权限名称或数据表已使用过");
+            }else{
+                if(Data::InsertData("oauth_scopes",array(
+                    "title"=>$title,
+                    "scope"=>$scope,
+                    "dbtable"=>$dbtable)
+                )){
+                    Inc::GoUrl(Route::Link("ut-oauth","role"),"新增成功");
+                }else{
+                    Inc::GoUrl("-1","新增失败");
+                }
+            }
         }
     }
 }
