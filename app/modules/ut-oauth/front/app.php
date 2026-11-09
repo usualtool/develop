@@ -16,10 +16,10 @@ class App{
         require_once dirname(__FILE__).'/'.'session.php';
         $role=Data::QueryData("oauth_scopes","","")["querydata"];
         $pagelink="";
-        $page=empty($_GET["page"]) ? 1 : $_GET["page"];
+        $page=empty($_GET["page"]) ? 1 : max(1,intval($_GET["page"]));
         $pagenum=10;
         $minid=$pagenum*($page-1);
-        $data=Data::QueryData("oauth_clients","","user_id='$oauth_uid'","id desc","$minid,$pagenum");
+        $data=Data::QueryData("oauth_clients","","user_id=?","id desc","$minid,$pagenum",array($oauth_uid));
         $querynum=$data["querynum"];
         $querydata=$data["querydata"];
         $totalpage=ceil($querynum/$pagenum);
@@ -29,22 +29,22 @@ class App{
         );
         $this->app->Open("app.cms");
         if(($_GET["do"] ?? "")=="creat"){
-            $client_id=Inc::SqlCheck($_POST["client_id"] ?? "");
+            $client_id=($_POST["client_id"] ?? "");
             $redirect_uri=$_POST["redirect_uri"] ?? "";
             $scope=implode(" ",$_POST["scope"] ?? array());
             if(empty($client_id) || empty($redirect_uri)){
                 Inc::GoUrl("-1","必填项不能为空");
             }
-            if(Data::QueryData("oauth_clients","","client_id='$client_id'")["querynum"]>0){
+            if(Data::QueryData("oauth_clients","","client_id=?","","",array($client_id))["querynum"]>0){
                 Inc::GoUrl("-1","应用ID已存在");
             }else{
                 if(Data::InsertData("oauth_clients",array(
-                    "user_id"=>$oauth_uid,
-                    "client_id"=>$client_id,
+                    "user_id"=>"?",
+                    "client_id"=>"?",
                     "client_secret"=>Inc::GetRandomString(16),
-                    "redirect_uri"=>$redirect_uri,
-                    "scope"=>$scope
-                ))){
+                    "redirect_uri"=>"?",
+                    "scope"=>"?"
+                ),array($oauth_uid,$client_id,$redirect_uri,$scope))){
                     Inc::GoUrl(Route::Link("ut-oauth","app"),"创建成功");
                 }else{
                     Inc::GoUrl("-1","创建失败");

@@ -23,9 +23,9 @@ class Template_creat{
          */
         $this->app->Open("template_creat.cms");
         if($do=="save"){
-            $module=Inc::SqlCheck($_POST["module"] ?? "");
-            $skin=Inc::SqlCheck($_POST["skin"] ?? "");
-            $page=Inc::SqlCheck($_POST["page"] ?? "");
+            $module=($_POST["module"] ?? "");
+            $skin=($_POST["skin"] ?? "");
+            $page=($_POST["page"] ?? "");
             $content=htmlspecialchars_decode($_POST["content"] ?? "");
             file_put_contents(APP_ROOT."/modules/".$module."/skin/".$skin."/".$page,$content);
             Inc::GoUrl(Route::Link("ut-template","template_creat"),"创建模板成功!");

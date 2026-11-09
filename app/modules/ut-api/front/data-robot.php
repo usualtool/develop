@@ -17,6 +17,10 @@ class Data_robot{
             $model = $data['model'] ?? 'GLM-4.7-FlashX';
             $stream = $data['stream'] ?? false;
             $sessionid = $data['sessionid'] ?? '';
+            if(!class_exists('usaltool\\Ai\\Ai')){
+                echo json_encode(array(array("error"=>"AI extension not installed")),JSON_UNESCAPED_UNICODE);
+                return;
+            }
             $ai = new Ai();
             echo $ai->Chat($messages, $model, $stream, $sessionid);
         }

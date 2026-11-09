@@ -112,7 +112,7 @@ class Data_work{
                         FROM information_schema.TABLES
                         WHERE TABLE_SCHEMA = DATABASE()";
                 try{
-                    $res = Data::JoinQuery($sql);
+                    $res = Data::RunYu($sql);
                 } catch (\Throwable $e){
                     $out['error'] = $e->getMessage();
                     return $out;

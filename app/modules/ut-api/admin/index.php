@@ -19,17 +19,17 @@ class Index{
         $this->app->Runin("data",Data::QueryData("cms_api_set","","","","1")["querydata"]);
         $this->app->Open("index.cms");
         if($do=="config"){
-            $id=Inc::SqlCheck($_POST["id"] ?? "");
-            $white=Inc::SqlCheck($_POST["white"] ?? "");
-            $opentable=Inc::SqlCheck($_POST["opentable"] ?? "");
-            $authtable=Inc::SqlCheck($_POST["authtable"] ?? "");
-            $authquery=Inc::SqlCheck($_POST["authquery"] ?? "");
+            $id=($_POST["id"] ?? "");
+            $white=($_POST["white"] ?? "");
+            $opentable=($_POST["opentable"] ?? "");
+            $authtable=($_POST["authtable"] ?? "");
+            $authquery=($_POST["authquery"] ?? "");
             if(Data::UpdateData("cms_api_set",array(
-                "white"=>$white,
-                "opentable"=>$opentable,
-                "authtable"=>$authtable,
-                "authquery"=>$authquery,
-            ),"id='$id'")){
+                "white"=>"?",
+                "opentable"=>"?",
+                "authtable"=>"?",
+                "authquery"=>"?",
+            ),"id=?",array($white,$opentable,$authtable,$authquery,intval($id)))){
                 Inc::GoUrl(Route::Link("ut-api"),"保存配置成功!");
             }else{
                 Inc::GoUrl("-1","保存配置失败!");

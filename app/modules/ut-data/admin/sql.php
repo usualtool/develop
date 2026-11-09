@@ -13,7 +13,7 @@ class Sql{
         $this->index();
     }
     public function index(){
-        $do=Inc::SqlCheck($_GET["do"] ?? "");
+        $do=($_GET["do"] ?? "");
         /**
          * 载入模板
          */

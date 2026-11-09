@@ -14,7 +14,7 @@ class Role{
         /**
          * 写入数据
          */
-        $this->app->Runin("datalist",Data::QueryData("cms_admin_role","","","id desc","")["querydata"]);
+        $this->app->Runin("datalist",Data::QueryData("cms_admin_role","","","id desc")["querydata"]);
         /**
          * 载入模板
          */

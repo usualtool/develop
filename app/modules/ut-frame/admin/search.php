@@ -8,8 +8,8 @@ class Search{
     }
     public function index(){
         header('content-type:application/json;charset=utf8');
-        $key=Inc::SqlCheck($_POST["key"] ?? "");
-        $data=Data::QueryData("cms_module","mid,modname,modurl","mid<>'ut-frame' and (mid like '%$key%' or modname like '%$key%' or backitem like '%$key%')","","")["querydata"];
+        $key=$_POST["key"] ?? "";
+        $data=Data::QueryData("cms_module","mid,modname,modurl","mid<>'ut-frame' and (mid like ? or modname like ? or backitem like ?)","","",array("%".$key."%","%".$key."%","%".$key."%"))["querydata"];
         echo json_encode($data);
     }
 }

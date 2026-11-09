@@ -19,10 +19,10 @@ class Login{
         $this->app->Open("login.cms");
         if($do=="login"){
             $gourl=urldecode($_POST["gourl"] ?? "");
-            $username=Inc::SqlCheck($_POST["username"] ?? "");
-            $password=md5(Inc::SqlCheck($_POST["password"] ?? ""));
+            $username=($_POST["username"] ?? "");
+            $password=md5(($_POST["password"] ?? ""));
             if(!empty($username)&&!empty($password)){
-                $data=Data::QueryData("oauth_users","","username='$username' and password='$password'");
+                $data=Data::QueryData("oauth_users","","username=? and password=?","","",array($username,$password));
                 if($data["querynum"]==1){
                     $_SESSION['oauth_uid']=$data["querydata"][0]["id"];
                     session_regenerate_id(TRUE);

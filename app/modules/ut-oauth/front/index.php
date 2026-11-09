@@ -20,7 +20,7 @@ class Index{
             if(empty($_POST["password"])){
                 Inc::GoUrl("-1","新密码不能为空");
             }
-            if(Data::UpdateData("oauth_users",array("password"=>md5($_POST["password"])),"id='$oauth_uid'")){
+            if(Data::UpdateData("oauth_users",array("password"=>md5($_POST["password"])),"id=?",array($oauth_uid))){
                 Inc::GoUrl(Route::Link("ut-oauth"),"更新密码成功");
             }else{
                 Inc::GoUrl("-1","更新密码失败");

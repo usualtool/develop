@@ -16,8 +16,8 @@ class Lock{
         $u=preg_replace('/[^A-Za-z0-9_\-\/\.]/','',$_GET["u"] ?? "");
         $this->app->Open("lock.cms");
         if(($_GET["do"] ?? "")=="login"){
-            $password=Inc::SqlCheck($_POST["password"] ?? "");
-            $data=Data::QueryData("cms_admin","","id='".$_SESSION['admin_id']."'","","");
+            $password=($_POST["password"] ?? "");
+            $data=Data::QueryData("cms_admin","","id=?","","",array(intval($_SESSION['admin_id'])));
             if($data["querynum"]==1){
                 $rows=$data["querydata"][0];
                 if(password_verify($password,$rows['password'])){

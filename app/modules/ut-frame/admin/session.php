@@ -37,7 +37,7 @@ class Session{
              * 底层模块
              * 除开UT-FRAME公共模块
              */
-            $app->Runin("modules",Data::QueryData("cms_module","","bid=3 and mid<>'".$config["DEFAULT_MOD"]."'","","")["querydata"]);
+            $app->Runin("modules",Data::QueryData("cms_module","","bid=3 and mid<>?","","",array($config["DEFAULT_MOD"]))["querydata"]);
             /**
              * 自定义模块
              */
@@ -46,7 +46,7 @@ class Session{
              * 当前运行模块及栏目
              * befoitem前端地址集，backtem后端栏目集
              */
-            $thismod=Data::QueryData("cms_module","","mid='$m'","","")["querydata"][0];
+            $thismod=Data::QueryData("cms_module","","mid=?","","",array($m))["querydata"][0];
             $app->Runin(
                 array("title","befoitem","backitem"),
                 array($thismod["modname"],$thismod["befoitem"],$thismod["backitem"])
@@ -55,11 +55,11 @@ class Session{
             $admin_id=$_SESSION['admin_id'];
             $admin_roleid=$_SESSION['admin_roleid'];
             $admin_avatar=$_SESSION['admin_avatar'];
-            $adminnum=Data::QueryData("cms_admin","","id='$admin_id' and username='$admin'")["querynum"];
+            $adminnum=Data::QueryData("cms_admin","","id=? and username=?","","",array(intval($admin_id),$admin))["querynum"];
             if($adminnum!==1){
                 Inc::GoUrl(Route::Link("ut-frame","login"));
             }else{
-                $myrole=Data::QueryData("cms_admin_role","","id='$admin_roleid'","","")["querydata"][0];
+                $myrole=Data::QueryData("cms_admin_role","","id=?","","",array(intval($admin_roleid)))["querydata"][0];
                 $app->Runin(array("admin_id","admin_role","admin_user","admin_avatar"),array($admin_id,$myrole["role"],$admin,$admin_avatar));
                 if(!Inc::Contain($m,explode(",",$myrole["module"]))){
                     Inc::GoUrl("-1","权限不足!");

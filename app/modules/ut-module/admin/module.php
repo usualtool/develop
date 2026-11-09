@@ -35,7 +35,7 @@ class Module{
         $this->app->Open("module.cms");
         if($do=="install"){
             $t=$_GET["t"] ?? "";
-            $mid=str_replace(".","",Inc::SqlCheck($_GET["mid"] ?? ""));
+            $mid=str_replace(".","",($_GET["mid"] ?? ""));
             if($t!="s"){
                 $down="";
                 if($t=="g"){
@@ -92,17 +92,17 @@ class Module{
             $installsql=Inc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$mods);
             $role=Data::QueryData("cms_admin_role","","","","")["querydata"];
             foreach($role as $rows){
-                $role_range=Data::QueryData("cms_admin_role","","id='".$rows["id"]."'","","")["querydata"][0]["module"];
+                $role_range=Data::QueryData("cms_admin_role","","id=?","","",array(intval($rows["id"])))["querydata"][0]["module"];
                 $new_range=$role_range.",".$mid;
-                Data::UpdateData("cms_admin_role",array("module"=>$new_range),"id='".$rows["id"]."'");
+                Data::UpdateData("cms_admin_role",array("module"=>$new_range),"id=?",array(intval($rows["id"])));
             }
-            if(Data::QueryData("cms_module","","mid='$mid'","","1")["querynum"]>0){
+            if(Data::QueryData("cms_module","","mid=?","","1",array($mid))["querynum"]>0){
                 Data::UpdateData("cms_module",array(
                     "bid"=>$itemid,
                     "modname"=>$title,
                     "modurl"=>$starturl,
                     "befoitem"=>$befoitem,
-                    "backitem"=>$backitem),"mid='$mid'");
+                    "backitem"=>$backitem),"mid=?",array($mid));
             }else{
                 Data::InsertData("cms_module",array(
                     "bid"=>$itemid,

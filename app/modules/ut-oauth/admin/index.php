@@ -14,7 +14,7 @@ class Index{
     }
     public function index(){
         $pagelink="";
-        $page=empty($_GET["page"]) ? 1 : $_GET["page"];
+        $page=empty($_GET["page"]) ? 1 : max(1,intval($_GET["page"]));
         $pagenum=10;
         $minid=$pagenum*($page-1);
         $data=Data::QueryData("oauth_clients","","","id desc","$minid,$pagenum");

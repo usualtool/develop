@@ -40,17 +40,21 @@ class Verify{
             if(!isset($headers["HTTP_SECRET"])){
                 Inc::GoUrl('','[{"error":"Secret Empty"}]');
             }
-            $secret=explode(",",Inc::SqlCheck($headers["HTTP_SECRET"]));
+            $secret=explode(",",($headers["HTTP_SECRET"]));
+            $param=array();
             for($i=0;$i<count($secret);$i++){
-                $authquery=str_replace("[".$i."]","'".$secret[$i]."'",$authquery);
+                if(strpos($authquery,"[".$i."]")!==false){
+                    $authquery=str_replace("[".$i."]","?",$authquery);
+                    $param[]=$secret[$i];
+                }
             }
-            $data=Data::QueryData($authtable,"",$authquery);
+            $data=Data::QueryData($authtable,"",$authquery,"","",$param);
             if($data["querynum"]<=0){
                 Inc::GoUrl('','[{"error":"Secret Error"}]');
             }
         }
         if(!empty($_POST["table"]) || !empty($_GET["table"])){
-            $table=empty($_GET["table"]) ? Inc::SqlCheck($_POST["table"]) : Inc::SqlCheck($_GET["table"]);
+            $table=empty($_GET["table"]) ? ($_POST["table"]) : ($_GET["table"]);
             if(!in_array($table,$opentable)){
                 Inc::GoUrl('','[{"error":"Not Open Table"}]');
             }

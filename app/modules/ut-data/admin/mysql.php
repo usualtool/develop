@@ -7,7 +7,7 @@ class Mysql{
         $this->index();
     }
     public function index(){
-        $do=Inc::SqlCheck($_GET["do"] ?? "");
+        $do=($_GET["do"] ?? "");
         if($do=="mysql-sql"){
             $sql=$_POST['sql'] ?? "";
             $res=Data::RunSql($sql);

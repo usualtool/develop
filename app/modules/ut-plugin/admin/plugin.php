@@ -35,7 +35,7 @@ class Plugin{
         $this->app->Open("plugin.cms");
         if($do=="install"){
             $t=$_GET["t"] ?? "";
-            $pid=str_replace(".","",Inc::SqlCheck($_GET["pid"] ?? ""));
+            $pid=str_replace(".","",($_GET["pid"] ?? ""));
             if($t!="s"){
                 $down="";
                 if($t=="g"){
@@ -76,13 +76,13 @@ class Plugin{
             $ver=Inc::StrSubstr("<ver>","</ver>",$plugins);
             $description=Inc::StrSubstr("<description>","</description>",$plugins);
             $installsql=Inc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$plugins);
-            if(Data::QueryData("cms_plugin","","pid='$pid'","","1")["querynum"]>0){
+            if(Data::QueryData("cms_plugin","","pid=?","","1",array($pid))["querynum"]>0){
                 Data::UpdateData("cms_plugin",array(
                     "type"=>$cate,
                     "auther"=>$auther,
                     "title"=>$title,
                     "ver"=>$ver,
-                    "description"=>$description),"pid='$pid'");
+                    "description"=>$description),"pid=?",array($pid));
             }else{
                 Data::InsertData("cms_plugin",array(
                     "pid"=>$pid,

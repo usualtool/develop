@@ -17,17 +17,17 @@ class Index{
         /**
          * 载入已安装插件
          */
-        $this->app->Runin("plugin",Data::QueryData("cms_plugin","","","id asc","")["querydata"]);
+        $this->app->Runin("plugin",Data::QueryData("cms_plugin","","","id asc")["querydata"]);
         /**
          * 载入模板
          */
         $this->app->Open("index.cms");
         if($do=="uninstall"){
-            $pid=str_replace(".","",Inc::SqlCheck($_GET["pid"] ?? ""));
+            $pid=str_replace(".","",($_GET["pid"] ?? ""));
             $pconfig=APP_ROOT."/plugins/".$pid."/usualtool.config";
             $plugins=file_get_contents($pconfig);
             $uninstallsql=Inc::StrSubstr("<uninstallsql><![CDATA[","]]></uninstallsql>",$plugins);
-            Data::DelData("cms_plugin","pid='$pid'");
+            Data::DelData("cms_plugin","pid=?",array($pid));
             if($uninstallsql=='0'){
                 Inc::DelDir(APP_ROOT."/plugins/".$pid);
                 if(is_dir(OPEN_ROOT."/assets/plugins/".$pid)){

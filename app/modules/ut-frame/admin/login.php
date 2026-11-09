@@ -24,20 +24,20 @@ class Login{
             if(isset($_SESSION["login_fail"]) && $_SESSION["login_fail"]>=5 && time()-$_SESSION["login_fail_time"]<600){
                 Inc::GoUrl("-1","失败次数过多,请10分钟后再试!");
             }
-            $username=Inc::SqlCheck($_POST["username"] ?? "");
-            $password=Inc::SqlCheck($_POST["password"] ?? "");
-            $code=Inc::SqlCheck(strtolower($_POST["code"] ?? ""));
-            $ip=Inc::SqlCheck(Inc::GetIp());
+            $username=($_POST["username"] ?? "");
+            $password=($_POST["password"] ?? "");
+            $code=(strtolower($_POST["code"] ?? ""));
+            $ip=(Inc::GetIp());
             if($_SESSION['authcode']==$code){
                 if(!empty($username)&&!empty($password)){
-                    $data=Data::QueryData("cms_admin","","username='$username'","","");
+                    $data=Data::QueryData("cms_admin","","username=?","","",array($username));
                     if($data["querynum"]==1){
                         $rows=$data["querydata"][0];
                         if(password_verify($password,$rows['password'])){
                             if($rows["state"]==1):
                                 Inc::GoUrl("-1","账户状态异常!");
                             endif;
-                            Data::InsertData("cms_admin_log",array("username"=>$username,"ip"=>$ip,"logintime"=>date('Y-m-d H:i:s',time())));
+                            Data::InsertData("cms_admin_log",array("username"=>"?","ip"=>"?","logintime"=>date('Y-m-d H:i:s',time())),array($username,$ip));
                             $_SESSION['admin']=$rows['username'];
                             $_SESSION['admin_id']=$rows['id'];
                             $_SESSION['admin_roleid']=$rows['roleid'];

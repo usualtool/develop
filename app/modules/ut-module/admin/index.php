@@ -23,16 +23,16 @@ class Index{
          */
         $this->app->Open("index.cms");
         if($do=="uninstall"){
-            $mid=str_replace(".","",Inc::SqlCheck($_GET["mid"] ?? ""));
+            $mid=str_replace(".","",($_GET["mid"] ?? ""));
             $modconfig=APP_ROOT."/modules/".$mid."/usualtool.config";
             $mods=file_get_contents($modconfig);
             $uninstallsql=Inc::StrSubstr("<uninstallsql><![CDATA[","]]></uninstallsql>",$mods);
-            Data::DelData("cms_module","mid='$mid'");
+            Data::DelData("cms_module","mid=?",array($mid));
             $role=Data::QueryData("cms_admin_role","","","","")["querydata"];
             foreach($role as $rows){
-                $role_range=Data::QueryData("cms_admin_role","","id='".$rows["id"]."'","","")["querydata"][0]["module"];
+                $role_range=Data::QueryData("cms_admin_role","","id=?","","",array(intval($rows["id"])))["querydata"][0]["module"];
                 $new_range=rtrim(str_replace(",,",",",str_replace($mid,"",$role_range)),",");
-                Data::UpdateData("cms_admin_role",array("module"=>$new_range),"id='".$rows["id"]."'");
+                Data::UpdateData("cms_admin_role",array("module"=>$new_range),"id=?",array(intval($rows["id"])));
             }
             if($uninstallsql=='0'){
                 Inc::DelDir(APP_ROOT."/modules/".$mid);

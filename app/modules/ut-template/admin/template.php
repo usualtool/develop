@@ -35,7 +35,7 @@ class Template{
         $this->app->Open("template.cms");
         if($do=="install"){
             $t=$_GET["t"] ?? "";
-            $tid=str_replace(".","",Inc::SqlCheck($_GET["tid"] ?? ""));
+            $tid=str_replace(".","",($_GET["tid"] ?? ""));
             if($t!="s"){
                 $down="";
                 if($t=="g"){
@@ -84,8 +84,8 @@ class Template{
             $ver=Inc::StrSubstr("<ver>","</ver>",$template);
             $description=Inc::StrSubstr("<description>","</description>",$template);
             $installsql=Inc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$template);
-            if(Data::QueryData("cms_template","","tid='$tid'","","1")["querynum"]>0){
-                Data::UpdateData("cms_template",array("tid"=>$tid,"lang"=>$lang,"title"=>$title),"tid='$tid'");
+            if(Data::QueryData("cms_template","","tid=?","","1",array($tid))["querynum"]>0){
+                Data::UpdateData("cms_template",array("tid"=>"?","lang"=>$lang,"title"=>$title),"tid=?",array($tid,$tid));
             }else{
                 Data::InsertData("cms_template",array("tid"=>$tid,"lang"=>$lang,"title"=>$title));
             }
@@ -100,8 +100,8 @@ class Template{
             }
         }
         if($do=="uninstall"){
-            $tid=str_replace(".","",Inc::SqlCheck($_GET["tid"] ?? ""));
-            if(Data::DelData("cms_template","tid='$tid'")){
+            $tid=str_replace(".","",($_GET["tid"] ?? ""));
+            if(Data::DelData("cms_template","tid=?",array($tid))){
                 $this->app->Rollback(APP_ROOT."/template/".$tid."/move");
                 Inc::DelDir(APP_ROOT."/template/".$tid);
                 if(is_dir(OPEN_ROOT."/assets/template/".$tid)){

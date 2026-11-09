@@ -14,10 +14,10 @@ class Log{
     public function index(){
         require_once dirname(__FILE__).'/'.'session.php';
         $pagelink="";
-        $page=empty($_GET["page"]) ? 1 : $_GET["page"];
+        $page=empty($_GET["page"]) ? 1 : max(1,intval($_GET["page"]));
         $pagenum=10;
         $minid=$pagenum*($page-1);
-        $data=Data::QueryData("oauth_access_tokens","","user_id='$oauth_uid'","id desc","$minid,$pagenum");
+        $data=Data::QueryData("oauth_access_tokens","","user_id=?","id desc","$minid,$pagenum",array($oauth_uid));
         $querynum=$data["querynum"];
         $querydata=$data["querydata"];
         $totalpage=ceil($querynum/$pagenum);

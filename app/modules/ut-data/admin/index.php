@@ -16,10 +16,10 @@ class Index{
          * 传递参数过程
          */
         $data=array();
-        $result=Data::JoinQuery("SHOW TABLES");
+        $result=Data::RunYu("select table_name as tbname from information_schema.tables where table_schema=database()");
         foreach($result["querydata"] as $arr){
             foreach($arr as $key=>$val){
-                if($key=="xu"){
+                if($key=="_n_"){
                     continue;
                 }
                 $rows='';
@@ -28,7 +28,7 @@ class Index{
                 $key='';
                 $def='';
                 $extra='';
-                $res=Data::JoinQuery("desc ".$val);
+                $res=Data::RunYu("select column_name as `Field`,column_type as `Type`,is_nullable as `Null`,column_key as `Key`,column_default as `Default`,extra as `Extra` from information_schema.columns where table_schema=database() and table_name=?",array($val));
                 foreach($res["querydata"] as $row){
                     $rows.=$row['Field'].",";
                     $type.=$row['Type'].",";

@@ -18,15 +18,15 @@ class Data_auth{
         **/
         if(Data::ModTable("cms_routine")){
             $set=Data::QueryData("cms_routine","","","","1")["querydata"][0];
-            $code=Inc::SqlCheck($_GET["code"] ?? "");
-            $action=Inc::SqlCheck($_GET["action"] ?? "");
+            $code=($_GET["code"] ?? "");
+            $action=($_GET["action"] ?? "");
             if($action=="wechat"){
                 $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
                 $result=json_encode($minipro->ChkLogin($code));
             }elseif($action=="wechat-crypt"){
                 $encrypteddata=$_POST["encrypteddata"] ?? "";
                 $iv=$_POST["iv"] ?? "";
-                $openid=Inc::SqlCheck($_POST["openid"] ?? "");
+                $openid=($_POST["openid"] ?? "");
                 $thirdkey=$_POST["thirdkey"] ?? "";
                 $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
                 $errcode=$minipro->DecryptData($thirdkey,$encrypteddata,$iv,$data);

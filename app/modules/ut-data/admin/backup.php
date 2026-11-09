@@ -20,7 +20,7 @@ class Backup{
         /**
          * 传递参数过程
          */
-        $do=Inc::SqlCheck($_GET["do"] ?? "");
+        $do=($_GET["do"] ?? "");
         /**
          * 封装备份数据方法
          */

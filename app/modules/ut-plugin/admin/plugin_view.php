@@ -12,11 +12,11 @@ class Plugin_view{
         $this->index();
     }
     public function index(){
-        $pid=Inc::SqlCheck($_GET["pid"] ?? "");
+        $pid=($_GET["pid"] ?? "");
         /**
          * 插件信息
          */
-        $this->app->Runin("plugin",Data::QueryData("cms_plugin","","pid='$pid'","","")["querydata"]);
+        $this->app->Runin("plugin",Data::QueryData("cms_plugin","","pid=?","","",array($pid))["querydata"]);
         /**
          * 插件后台转化
          */

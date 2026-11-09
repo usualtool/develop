@@ -39,7 +39,7 @@ class Api{
             echo json_encode(['error' => 'Insufficient scope: "'.$scope.'" required']);
             exit;
         }else{
-            $dbtable=Data::QueryData("oauth_scopes","","scope='$scope'")["querydata"][0]["dbtable"];
+            $dbtable=Data::QueryData("oauth_scopes","","scope=?","","",array($scope))["querydata"][0]["dbtable"];
             $data=Data::QueryData($dbtable,"",$where,$order,$limit);
         }
         echo json_encode($data);

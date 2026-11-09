@@ -15,7 +15,7 @@ class Template_view{
         $do=$_GET["do"] ?? "";
         $d=empty($_POST["d"]) ? ($_GET["d"] ?? "") : $_POST["d"];
         $d=urldecode($d);
-        $d=Inc::SqlCheck(str_replace("|","/",str_replace("%7C","/",str_replace("_cms",".cms",str_replace("..","",$d)))));
+        $d=(str_replace("|","/",str_replace("%7C","/",str_replace("_cms",".cms",str_replace("..","",$d)))));
         $html=file_get_contents(APP_ROOT."/modules/".$d);
         $this->app->Runin(array("d","file","html"),array($d,APP_ROOT."/modules/".$d,htmlspecialchars($html)));
         /**

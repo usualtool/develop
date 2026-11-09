@@ -23,9 +23,9 @@ class Index{
          */
         $this->app->Open("index.cms");
         if($do=="update"){
-            $id=Inc::SqlCheck($_GET["id"] ?? "");
-            $state=Inc::SqlCheck($_GET["state"] ?? "");
-            if(Data::UpdateData("cms_admin",array("state"=>$state),"id='$id'")){
+            $id=($_GET["id"] ?? "");
+            $state=($_GET["state"] ?? "");
+            if(Data::UpdateData("cms_admin",array("state"=>"?"),"id=?",array($state,intval($id)))){
                 Inc::GoUrl(Route::Link("ut-power"),"更新状态成功!");
             }else{
                 Inc::GoUrl("-1","更新状态失败!");

@@ -430,10 +430,13 @@ class Data_mcp{
                     if (!is_string($key) || preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $key) !== 1) {
                         continue;
                     }
-                    if (!is_scalar($value)) {
+                    if (is_array($value)) {
+                        $val = json_encode($value, JSON_UNESCAPED_UNICODE);
+                    } elseif (is_scalar($value)) {
+                        $val = (string) $value;
+                    } else {
                         continue;
                     }
-                    $val          = (string) $value;
                     $_GET[$key]   = $val;
                     $_POST[$key]  = $val;
                     $_REQUEST[$key] = $val;
