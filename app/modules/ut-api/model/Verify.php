@@ -9,7 +9,7 @@ class Verify{
         $headers=$_SERVER;
         $origin=isset($headers['HTTP_ORIGIN']) ? $headers['HTTP_ORIGIN'] : '';
         $referer=$headers["HTTP_REFERER"] ?? "";
-        $api=Data::QueryData("cms_api_set","","","","1")["querydata"][0];
+        $api=Data::QueryData("cms_api","","","","1")["querydata"][0];
         $white=explode(",",$api["white"]);
         $opentable=explode(",",$api["opentable"]);
         $authtable=$api["authtable"];

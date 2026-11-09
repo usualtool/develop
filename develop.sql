@@ -25,8 +25,9 @@ CREATE TABLE `cms_admin_role` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_api_set`;
-CREATE TABLE `cms_api_set` (
+CREATE TABLE `cms_api` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `token` varchar(250) DEFAULT NULL,
   `white` text,
   `opentable` text,
   `authtable` varchar(50) DEFAULT NULL,
@@ -58,23 +59,6 @@ CREATE TABLE `cms_plugin` (
   `title` varchar(50) DEFAULT NULL,
   `ver` varchar(10) DEFAULT NULL,
   `description` text,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-DROP TABLE IF EXISTS `cms_search`;
-CREATE TABLE `cms_search` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hit` int(11) DEFAULT '1',
-  `keyword` varchar(100) DEFAULT NULL,
-  `lang` varchar(20) DEFAULT 'zh',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-DROP TABLE IF EXISTS `cms_search_set`;
-CREATE TABLE `cms_search_set` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `dbs` varchar(50) DEFAULT NULL,
-  `fields` varchar(100) DEFAULT NULL,
-  `wheres` varchar(200) DEFAULT NULL,
-  `pages` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_template`;
@@ -168,7 +152,7 @@ CREATE TABLE `oauth_jwt` (
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 INSERT INTO `cms_admin` VALUES (1, 0, 1, 'admin', '$2y$12$IXiotxHNFPNDQ3c.tdyvPumkb9W1d1Lr5N7ZDxWgX2cVlBx5n554W', '/assets/images/noimage.png', '2021-08-08 00:00:00');
 INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-oauth,ut-api,ut-power');
-INSERT INTO `cms_api_set` VALUES (1, NULL, NULL, 'cms_admin', 'username=[0] and password=[1]');
+INSERT INTO `cms_api` VALUES (1, NULL, NULL, NULL, 'cms_admin', 'username=[0] and password=[1]');
 INSERT INTO `cms_module` VALUES (1, 3, 'ut-frame', 'UT公共模块', 'index.php', 1, 90, 0, '', NULL, NULL);
 INSERT INTO `cms_module` VALUES (2, 3, 'ut-module', '模块', 'index.php', 1, 91, 0, '', '', '模块市场:module.php,管理模块:index.php');
 INSERT INTO `cms_module` VALUES (3, 3, 'ut-plugin', '插件', 'index.php', 1, 92, 0, '', '', '插件市场:plugin.php,管理插件:index.php');

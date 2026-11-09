@@ -393,7 +393,7 @@ class Data_mcp{
                 'inputSchema' => [
                     'type'       => 'object',
                     'properties' => [
-                        'table'  => ['type' => 'string', 'description' => '要查询的表名，须在 cms_api_set.opentable 白名单内'],
+                        'table'  => ['type' => 'string', 'description' => '要查询的表名，须在 cms_api.opentable 白名单内'],
                         'where'  => ['type' => 'string', 'description' => '查询条件，例如 id=1'],
                         'fields' => ['type' => 'string', 'description' => '返回字段，逗号分隔（选填，页面支持时生效）'],
                         'order'  => ['type' => 'string', 'description' => '排序（选填，页面支持时生效）'],

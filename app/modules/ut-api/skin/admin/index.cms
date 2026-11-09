@@ -34,7 +34,7 @@
                                 <div class="border-bottom pb-2">
                                     <{loop=>$data $row}>
                                     <form name="form1" action="<{url=>Link($module,"","do=config")}>" method="post">
-                                    <input type="hidden" name="id" value="<{$row->id}>">
+                                      <input type="hidden" name="id" value="<{$row->id}>">
                                       <div class="form-group">
                                           <label for="email"><b>应用ApiKey</b></label>
                                           <{$apikey}>
