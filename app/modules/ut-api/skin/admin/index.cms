@@ -100,17 +100,6 @@
                                         lang 选填，语言编码，值为zh,en等时指定<br/>
                                     </div>
                                 </a>
-                                <a id="search">
-                                    <div class="form-group">
-                                        <label for="largeInput"><strong>搜索数据</strong></label><br>
-                                        <span style="color:blue;">接口地址：<{url=>Link("ut-api","data-search","","front")}></span> <a class="ml-2 ut-button" href="<{url=>Link($module,"test","do=search")}>">调试</a><br/>
-                                        URL:<{url=>Link("ut-api","data-search","","front")}><br>
-                                        headers携带time<br/>
-                                        headers携带token<br/>
-                                        GET参数:<br>
-                                        keyword 必填，关键词。
-                                    </div>
-                                </a>
                                 <a id="lang">
                                     <div class="form-group">
                                         <label for="largeInput"><strong>语言解析</strong></label><br>
@@ -145,7 +134,6 @@
                                 <p class="border-bottom">接口导航</p>
                                 <p><a href="<{url=>Link($module)}>#handle">操作数据:data-handle</a></p>
                                 <p><a href="<{url=>Link($module)}>#query">查询数据:data-query</a></p>
-                                <p><a href="<{url=>Link($module)}>#search">搜索数据:data-search</a></p>
                                 <p><a href="<{url=>Link($module)}>#lang">语言解析:data-lang</a></p>
                                 <p><a href="<{url=>Link($module)}>#auth">授权解析(小程序):data-auth</a></p>
                             </div>

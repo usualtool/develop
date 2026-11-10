@@ -50,11 +50,6 @@
                                         order(选填):<input type="text" class="form-control input-square" id="order" value="addtime desc"><br>
                                         limit(选填):<input type="text" class="form-control input-square" id="limit"><br>
                                         lang(选填):<input type="text" class="form-control input-square" id="lang" value="0">
-                                    <{else if $do=="search"}>
-                                        成功返回数据,失败返回<code>[{"error":1}]</code><br>
-                                        使用该接口需要提前进行 <a target="_blank" href="<{url=>Link("ut-system","search")}>">搜索设置</a><br>
-                                        GET数据:<br>
-                                        keyword:<input type="text" class="form-control input-square" id="keyword" value="test">
                                     <{else if $do=="lang"}>
                                         成功返回数据,失败返回<code>[{"error":1}]</code><br>
                                         GET数据:<br>
@@ -115,9 +110,6 @@
             var limit=$("#limit").val();
             var lang=$("#lang").val();
             jsonstr="table="+table+"&field="+field+"&where="+where+"&order="+order+"&limit="+limit+"&lang="+lang;
-        <{else if $do=="search"}>
-            var keyword=$("#keyword").val();
-            jsonstr="keyword="+keyword;
         <{else if $do=="lang"}>
             var word=$("#word").val();
             var module=$("#module").val();
