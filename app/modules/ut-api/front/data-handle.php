@@ -1,6 +1,5 @@
 <?php
 namespace Controller\Ut_api\Front;
-use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use Model\Ut_api\Verify;
 class Data_handle{
@@ -9,13 +8,9 @@ class Data_handle{
     }
     public function index(){
         global $config;
-        (new Verify())->Check();
+        (new Verify())->Check(($_POST["action"] ?? "")==="" ? "add" : $_POST["action"]);
         $table=($_POST["table"] ?? "");
         $where=$_POST["where"] ?? "";
-        if(preg_match('/\b(union|select|insert|update|delete|drop|alter|truncate|outfile|load_file|information_schema)\b|--|\/\*|\*\/|#|;|\bsleep\s*\(|\bbenchmark\s*\(/i',$where)){
-            echo'[{"error":"Illegal Where"}]';
-            return;
-        }
         $action=($_POST["action"] ?? "");
         $param=$_POST["param"] ?? array();
         if(is_string($param)){
@@ -26,9 +21,15 @@ class Data_handle{
             $param=array($param);
         }
         $param=array_values($param);
-        if(($action=="mon" || $action=="del") && substr_count($where,"?")!==count($param)){
-            echo'[{"error":"Param Mismatch"}]';
-            return;
+        if($action=="mon" || $action=="del"){
+            if(substr_count($where,"?")!==count($param)){
+                echo'[{"error":"Param Mismatch"}]';
+                return;
+            }
+            if(substr_count($where,"?")<1 || Verify::CheckPart($where)){
+                echo'[{"error":"Illegal Where"}]';
+                return;
+            }
         }
         $data=array_diff_key($_POST,array("table"=>$table,"where"=>$where,"action"=>$action,"param"=>$param));
         $cols=array();

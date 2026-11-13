@@ -49,16 +49,6 @@
                                               <textarea class="form-control" rows="3" name="opentable"><{$row->opentable}></textarea>
                                           </div>
                                       </div>
-                                      <div class="form-group row">
-                                          <div class="col-md-6">
-                                              <label>权限验证表</label>
-                                              <input type="text" class="form-control" name="authtable" value="<{$row->authtable}>">
-                                          </div>
-                                          <div class="col-md-6">
-                                              <label>验证查询条件</label>
-                                              <input type="text" class="form-control" name="authquery" value="<{inc=>DeSqlCheck($row["authquery"])}>">
-                                          </div>
-                                      </div>
                                       <div class="form-group">
                                           <button type="submit" class="btn btn-primary">保存</button>
                                       </div>

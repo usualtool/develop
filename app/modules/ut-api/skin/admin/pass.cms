@@ -1,0 +1,71 @@
+<{include "$pubtemp/head.cms"}>
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title"><{$title}></h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home">
+                            <a href="./">
+                                <i class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="separator">
+                            <i class="fa fa-angle-double-right"></i>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<{url=>Link($module)}>"><{$title}></a>
+                        </li>
+                        <li class="separator">
+                            <i class="fa fa-angle-double-right"></i>
+                        </li>
+                        <li class="nav-item">
+                            通行日志
+                        </li>
+                        <li class="nav-item">
+                            <{item=>$module,$backitem}>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive" id="ut-auto">
+                            <table class="display table table-sm table-striped table-hover" id="ut-table">
+                                <thead>
+                                    <tr>
+                                        <th>操作</th>
+                                        <th>数据表</th>
+                                        <th>票据</th>
+                                        <th>条件</th>
+                                        <th>提交数据</th>
+                                        <th>IP</th>
+                                        <th>时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <{if empty($datalist)}>
+                                    <tr>
+                                        <td colspan="7">暂无日志</td>
+                                    </tr>
+                                    <{/if}>
+                                    <{loop=>$datalist $rows}>
+                                    <tr>
+                                        <td><{$rows->act}></td>
+                                        <td><{$rows->utable}></td>
+                                        <td class="text-nowrap" title="<{$rows->usecretfull}>"><{$rows->usecret}></td>
+                                        <td class="text-break" title="<{$rows->uwherefull}>"><{$rows->uwhere}></td>
+                                        <td class="text-break" title="<{$rows->udatafull}>"><small><{$rows->udata}></small></td>
+                                        <td class="text-nowrap"><{$rows->ip}></td>
+                                        <td class="text-nowrap"><{$rows->addtime}></td>
+                                    </tr>
+                                    <{/loop}>
+                                </tbody>
+                            </table>
+                        </div>
+                        <{page=>total,curpage,listnum,pagelink}>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<{include "$pubtemp/foot.cms"}>

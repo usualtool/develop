@@ -24,16 +24,41 @@ CREATE TABLE `cms_admin_role` (
   `module` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-DROP TABLE IF EXISTS `cms_api_set`;
+DROP TABLE IF EXISTS `cms_api`;
 CREATE TABLE `cms_api` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `token` varchar(250) DEFAULT NULL,
   `white` text,
   `opentable` text,
-  `authtable` varchar(50) DEFAULT NULL,
-  `authquery` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `cms_api_secret`;
+CREATE TABLE `cms_api_secret` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `appid` varchar(100) DEFAULT NULL,
+  `secret` varchar(100) DEFAULT NULL,
+  `addtime` datetime DEFAULT NULL,
+  `usetime` datetime DEFAULT NULL,
+  `ip` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `secret` (`secret`),
+  KEY `addtime` (`addtime`),
+  KEY `ip_addtime` (`ip`,`addtime`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `cms_api_log`;
+CREATE TABLE `cms_api_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `act` varchar(50) DEFAULT NULL,
+  `utable` varchar(100) DEFAULT NULL,
+  `usecret` varchar(100) DEFAULT NULL,
+  `uwhere` varchar(500) DEFAULT NULL,
+  `udata` text,
+  `ip` varchar(100) DEFAULT NULL,
+  `addtime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `addtime` (`addtime`),
+  KEY `act` (`act`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_module`;
 CREATE TABLE `cms_module` (
@@ -152,7 +177,7 @@ CREATE TABLE `oauth_jwt` (
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 INSERT INTO `cms_admin` VALUES (1, 0, 1, 'admin', '$2y$12$IXiotxHNFPNDQ3c.tdyvPumkb9W1d1Lr5N7ZDxWgX2cVlBx5n554W', '/assets/images/noimage.png', '2021-08-08 00:00:00');
 INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-oauth,ut-api,ut-power');
-INSERT INTO `cms_api` VALUES (1, NULL, NULL, NULL, 'cms_admin', 'username=[0] and password=[1]');
+INSERT INTO `cms_api` VALUES (1, NULL, NULL, NULL);
 INSERT INTO `cms_module` VALUES (1, 3, 'ut-frame', 'UT公共模块', 'index.php', 1, 90, 0, '', NULL, NULL);
 INSERT INTO `cms_module` VALUES (2, 3, 'ut-module', '模块', 'index.php', 1, 91, 1, '', '', '模块市场:module.php,管理模块:index.php');
 INSERT INTO `cms_module` VALUES (3, 3, 'ut-plugin', '插件', 'index.php', 1, 92, 1, '', '', '插件市场:plugin.php,管理插件:index.php');
@@ -161,5 +186,5 @@ INSERT INTO `cms_module` VALUES (5, 3, 'ut-cac', 'CAC', 'index.php', 1, 94, 1, '
 INSERT INTO `cms_module` VALUES (6, 3, 'ut-system', '配置', 'index.php', 1, 95, 1, '', '', '');
 INSERT INTO `cms_module` VALUES (7, 3, 'ut-data', '数据', 'index.php', 1, 96, 1, '', '', '表管理:index.php,SQL查询:sql.php,备份还原:backup.php');
 INSERT INTO `cms_module` VALUES (8, 3, 'ut-oauth', 'OAuth', 'index.php', 1, 97, 1, '', '', '管理应用:index.php,授权记录:log.php,权限集合:role.php,用户列表:user.php');
-INSERT INTO `cms_module` VALUES (9, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口列表:index.php,在线调试:test.php');
+INSERT INTO `cms_module` VALUES (9, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口配置:index.php,在线调试:test.php,Secret票据:secret.php,通行日志:pass.php');
 INSERT INTO `cms_module` VALUES (10, 3, 'ut-power', '权限', 'index.php', 1, 99, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');

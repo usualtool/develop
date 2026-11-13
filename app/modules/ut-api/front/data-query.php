@@ -9,13 +9,10 @@ class Data_query{
     }
     public function index(){
         global $config;
-        (new Verify())->Check();
+        (new Verify())->Check("query");
         $table=($_POST["table"] ?? "");
         $field=empty($_POST["field"]) ? "" : ($_POST["field"]);
         $where=empty($_POST["where"]) ? "" : $_POST["where"];
-        if(preg_match('/\b(union|select|insert|update|delete|drop|alter|truncate|outfile|load_file|information_schema)\b|--|\/\*|\*\/|#|;|\bsleep\s*\(|\bbenchmark\s*\(/i',$where)){
-            Inc::GoUrl('','[{"error":"Illegal Where"}]');
-        }
         $limit=empty($_POST["limit"]) ? "" : ($_POST["limit"]);
         $order=empty($_POST["order"]) ? "" : ($_POST["order"]);
         $param=$_POST["param"] ?? array();

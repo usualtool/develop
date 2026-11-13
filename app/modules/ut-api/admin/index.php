@@ -22,15 +22,11 @@ class Index{
             $id=($_POST["id"] ?? "");
             $white=($_POST["white"] ?? "");
             $opentable=($_POST["opentable"] ?? "");
-            $authtable=($_POST["authtable"] ?? "");
-            $authquery=($_POST["authquery"] ?? "");
             if(Data::UpdateData("cms_api",array(
                 "token"=>"?",
                 "white"=>"?",
                 "opentable"=>"?",
-                "authtable"=>"?",
-                "authquery"=>"?",
-            ),"id=?",array(md5($config["UTCODE"]),$white,$opentable,$authtable,$authquery,intval($id)))){
+            ),"id=?",array(md5($config["UTCODE"]),$white,$opentable,intval($id)))){
                 Inc::GoUrl(Route::Link("ut-api"),"保存配置成功!");
             }else{
                 Inc::GoUrl("-1","保存配置失败!");
