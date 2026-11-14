@@ -40,6 +40,7 @@ class Data_handle{
             }
         }
         $data=array_intersect_key($data,$cols);
+        $data=array_diff_key($data,array_flip(Verify::ProtectList()));
         if($action!="del" && empty($data)){
             echo'[{"error":1}]';
             return;

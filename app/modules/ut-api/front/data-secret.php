@@ -11,7 +11,7 @@ class Data_secret{
         (new Verify())->Check();
         $now=time();
         $ip=Inc::GetIp();
-        $appid=trim((string)($_GET["appid"] ?? ($_POST["appid"] ?? "")));
+        $appid=trim((string)($_SERVER["HTTP_APPID"] ?? ""));
         if($appid===""){
             echo '[{"error":"Appid Empty"}]';
             return;

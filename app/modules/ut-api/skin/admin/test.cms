@@ -88,7 +88,24 @@
     </div>
 <{include "$pubtemp/foot.cms"}>
 <script>
+    var appid="<{$appid}>";
+    var appsecret="<{$appsecret}>";
+    function utnonce(){
+        var s="";
+        var chars="0123456789abcdef";
+        for(var i=0;i<16;i++){s+=chars.charAt(Math.floor(Math.random()*16));}
+        return s;
+    }
+    function utsign(){
+        var t=Math.floor(Date.now()/1000);
+        var nonce=utnonce();
+        return {t:t,nonce:nonce,sign:md5(appsecret+t+nonce)};
+    }
     function runtest(){
+        if(!appid || !appsecret){
+            $("#result").html("<code>请先在「应用密钥」中添加并启用应用</code>");
+            return;
+        }
         var postdata;
         if($("#postdata").length>0){
             postdata=$("#postdata").val();
@@ -96,7 +113,6 @@
             postdata="";
         }
         var jsonstr;
-        var token=md5("<{$key}>"+gettimestamp());
         <{if $do=="handle"}>
             var action=$("#action").val();
             var table=$("#table").val();
@@ -121,27 +137,57 @@
             jsonstr="action="+action+"&code="+code;
         <{/if}>
         var posturl="<{$appurl}><{url=>Link("ut-api","data-".$do,"","front")}>";
+        var send=function(secret){
+            var h=utsign();
+            $.ajax({
+                url: posturl,
+                <{if $do=="handle" || $do=="query"}>
+                type: "post",
+                <{else}>
+                type: "get",
+                <{/if}>
+                dataType: "json",
+                data: jsonstr+"&"+postdata,
+                contentType: "application/x-www-form-urlencoded",
+                async:false,
+                beforeSend: function(XMLHttpRequest){
+                    XMLHttpRequest.setRequestHeader("appid",appid);
+                    XMLHttpRequest.setRequestHeader("time",h.t);
+                    XMLHttpRequest.setRequestHeader("nonce",h.nonce);
+                    XMLHttpRequest.setRequestHeader("sign",h.sign);
+                    if(secret){
+                        XMLHttpRequest.setRequestHeader("secret",secret);
+                    }
+                },
+                success: function(res){
+                    $("#result").html("<code>"+JSON.stringify(res)+"</code>");
+                }
+            });
+        };
+        <{if $do=="handle"}>
+        var h0=utsign();
         $.ajax({
-            url: posturl,
-            <{if $do=="handle" || $do=="query"}>
+            url: "<{$appurl}><{url=>Link("ut-api","data-secret","","front")}>",
             type: "post",
-            <{else}>
-            type: "get",
-            <{/if}>
-            dataType: "json",
-            data: jsonstr+"&"+postdata,
+            data: "",
             contentType: "application/x-www-form-urlencoded",
             async:false,
             beforeSend: function(XMLHttpRequest){
-                XMLHttpRequest.setRequestHeader("time",getnowdate());
-                XMLHttpRequest.setRequestHeader("token",token);
-                <{if $do=="handle"}>
-                XMLHttpRequest.setRequestHeader("secret","<{$secret}>");
-                <{/if}>
+                XMLHttpRequest.setRequestHeader("appid",appid);
+                XMLHttpRequest.setRequestHeader("time",h0.t);
+                XMLHttpRequest.setRequestHeader("nonce",h0.nonce);
+                XMLHttpRequest.setRequestHeader("sign",h0.sign);
             },
             success: function(res){
-                $("#result").html("<code>"+JSON.stringify(res)+"</code>");
+                if(res && res[0] && res[0].secret){
+                    send(res[0].secret);
+                }else{
+                    $("#result").html("<code>"+JSON.stringify(res)+"</code>");
+                }
             }
-        })
+        });
+        <{else}>
+        send("");
+        <{/if}>
     }
 </script>

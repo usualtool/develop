@@ -1,0 +1,126 @@
+<{include "$pubtemp/head.cms"}>
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title"><{$title}></h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home">
+                            <a href="./">
+                                <i class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="separator">
+                            <i class="fa fa-angle-double-right"></i>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<{url=>Link($module)}>"><{$title}></a>
+                        </li>
+                        <li class="separator">
+                            <i class="fa fa-angle-double-right"></i>
+                        </li>
+                        <li class="nav-item">
+                            应用密钥
+                        </li>
+                        <li class="nav-item">
+                            <{item=>$module,$backitem}>
+                        </li>
+                    </ul>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center border-bottom mb-3 pb-2">
+                                    <button type="button" class="btn btn-primary text-nowrap" data-toggle="modal" data-target="#utAddApp">添加应用密钥</button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>AppID<br/>AppSecret</th>
+                                                <th>状态</th>
+                                                <th>绑定IP</th>
+                                                <th>备注</th>
+                                                <th>创建时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <{if empty($datalist)}>
+                                            <tr>
+                                                <td colspan="8">暂无应用</td>
+                                            </tr>
+                                            <{/if}>
+                                            <{loop=>$datalist $rows}>
+                                            <tr>
+                                                <td class="text-nowrap"><{$rows["appid"]}><br/><{$rows["appsecret"]}></td>
+                                                <td>
+                                                    <select name="status" class="form-control form-control-sm ut-status" style="min-width:90px;">
+                                                        <option value="1" <{if $rows["status"]==1}>selected<{/if}>>启用</option>
+                                                        <option value="0" <{if $rows["status"]==0}>selected<{/if}>>停用</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" class="form-control form-control-sm ut-bindip" value="<{$rows["bindip"]}>" style="min-width:110px;"></td>
+                                                <td><input type="text" class="form-control form-control-sm ut-remark" value="<{$rows["remark"]}>" style="min-width:110px;"></td>
+                                                <td class="text-nowrap"><{$rows["addtime"]}></td>
+                                                <td class="text-nowrap">
+                                                    <button type="button" class="btn btn-primary btn-sm ut-mon mb-2" data-id="<{$rows["id"]}>">保存</button>
+                                                    <br/><a class="btn btn-warning btn-sm mb-2" href="<{url=>Link($module,"app","do=regen&id=".$rows["id"])}>" onclick="return confirm('重置后旧 AppSecret 立即失效，确定重置？');">重置</a>
+                                                    <br/><a class="btn btn-danger btn-sm" href="<{url=>Link($module,"app","do=del&id=".$rows["id"])}>" onclick="return confirm('确定删除该应用？删除后该客户端将无法通过验证！');">删除</a>
+                                                </td>
+                                            </tr>
+                                            <{/loop}>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <{page=>total,curpage,listnum,pagelink}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="modal fade" id="utAddApp">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">添加应用</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form method="post" action="<{url=>Link($module,"app","do=add")}>" name="form">
+      <div class="modal-body">
+        <div class="form-group">
+            <label>AppID（字母数字_-，如小程序 appid 或站点域名）</label>
+            <input type="text" class="form-control" name="appid" required>
+        </div>
+        <div class="form-group">
+            <label>备注</label>
+            <input type="text" class="form-control" name="remark">
+        </div>
+        <p class="mb-0 text-muted">添加后自动生成 48 位 AppSecret，可直接在列表中查看或重置。</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <button type="submit" class="btn btn-primary">添加</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+$(function(){
+    $(document).on("click",".ut-mon",function(){
+        var btn=$(this),tr=btn.closest("tr");
+        var f=$('<form method="post" action="<{url=>Link($module,"app","do=mon")}>"></form>');
+        f.append($('<input type="hidden" name="id">').val(btn.data("id")));
+        f.append($('<input type="hidden" name="status">').val(tr.find(".ut-status").val()));
+        f.append($('<input type="hidden" name="bindip">').val(tr.find(".ut-bindip").val()));
+        f.append($('<input type="hidden" name="remark">').val(tr.find(".ut-remark").val()));
+        $("body").append(f);
+        f.submit();
+    });
+});
+</script>
+<{include "$pubtemp/foot.cms"}>

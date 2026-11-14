@@ -36,7 +36,7 @@
                                     <form name="form1" action="<{url=>Link($module,"","do=config")}>" method="post">
                                       <input type="hidden" name="id" value="<{$row->id}>">
                                       <div class="form-group">
-                                          <label for="email"><b>应用ApiKey</b></label>
+                                          <label for="email"><b>站点密钥</b>（用于 MCP 接口与定时任务回调校验；数据接口鉴权请使用「应用密钥」签名）</label>
                                           <{$apikey}>
                                       </div>
                                       <div class="form-group row">
@@ -48,6 +48,10 @@
                                               <label>允许请求表（逗号分割）</label>
                                               <textarea class="form-control" rows="3" name="opentable"><{$row->opentable}></textarea>
                                           </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <label>保护字段（逗号分割，接口查询输出与写入一律剔除，password 恒受保护）</label>
+                                          <input type="text" class="form-control" name="protect" value="<{$row->protect}>">
                                       </div>
                                       <div class="form-group">
                                           <button type="submit" class="btn btn-primary">保存</button>
@@ -63,9 +67,9 @@
                                         该接口建议在封闭状态下使用，并需要传递headers参数secret进行验证。<br>
                                         验证权限的数据表（验证表）及验证条件在数据接口后端设置。<br>
                                         URL:<{url=>Link("ut-api","data-handle","","front")}><br>
-                                        headers携带time<br/>
-                                        headers携带token<br/>
-                                        headers携带secret（secret即验证条件参数值，多个参数值用半角逗号拼接）<br/>
+                                        headers携带appid、time、nonce、sign<br>
+                                        sign=md5(appsecret+time+nonce)，time为秒级时间戳，nonce一次一用<br>
+                                        headers携带secret（写操作前先调 data-secret 领取一次性票据）<br>
                                         <span style="color:blue">POST参数:</span><br>
                                         action 必填，add增/mon改/del/删<br>
                                         table 必填，操作数据表<br>
@@ -79,14 +83,14 @@
                                         <label for="largeInput"><strong>查询数据</strong></label><br>
                                         <span style="color:blue;">接口地址：<{url=>Link("ut-api","data-query","","front")}></span> <a class="ml-2 ut-button" href="<{url=>Link($module,"test","do=query")}>">调试</a><br/>
                                         URL:<{url=>Link("ut-api","data-query","","front")}><br>
-                                        headers携带time<br/>
-                                        headers携带token<br/>
+                                        headers携带appid、time、nonce、sign<br>
+                                        sign=md5(appsecret+time+nonce)，time为秒级时间戳，nonce一次一用<br>
                                         <span style="color:blue">POST参数:</span><br>
                                         table 必填，数据表<br>
-                                        field 选填，查询字段<br>
+                                        field 选填，查询字段（保护字段自动剔除）<br>
                                         where 选填，查询条件格式：id=1<br>
                                         order 选填，排序方式格式id desc或id asc<br>
-                                        limit 选填，获取数量开始截止数格式：0,10，<br>
+                                        limit 选填，获取数量开始截止数格式：0,10，单次最多100条，不传默认0,20<br>
                                         lang 选填，语言编码，值为zh,en等时指定<br/>
                                     </div>
                                 </a>
@@ -95,8 +99,8 @@
                                         <label for="largeInput"><strong>语言解析</strong></label><br>
                                         <span style="color:blue;">接口地址：<{url=>Link("ut-api","data-lang","","front")}></span> <a class="ml-2 ut-button" href="<{url=>Link($module,"test","do=lang")}>">调试</a><br/>
                                         URL:<{url=>Link("ut-api","data-lang","","front")}><br>
-                                        headers携带time<br/>
-                                        headers携带token<br/>
+                                        headers携带appid、time、nonce、sign<br>
+                                        sign=md5(appsecret+time+nonce)<br>
                                         GET参数:<br>
                                         word 必填，语言参数。多个参数使用半角逗号分割<br>
                                         module 选填，模块标志名称，填写该项将直接解析该模块下的语言包<br>
@@ -108,8 +112,8 @@
                                         <label for="largeInput"><strong>授权解析（小程序）</strong></label><br>
                                         <span style="color:blue;">接口地址：<{url=>Link("ut-api","data-auth","","front")}></span> <a class="ml-2 ut-button" href="<{url=>Link($module,"test","do=auth")}>">调试</a><br/>
                                         URL:<{url=>Link("ut-api","data-auth","","front")}><br>
-                                        headers携带time<br/>
-                                        headers携带token<br/>
+                                        headers携带appid、time、nonce、sign<br>
+                                        sign=md5(appsecret+time+nonce)<br>
                                         GET参数:<br>
                                         action 必填，wechat（获取微信用户基础信息）、wechat-crypt（获取微信用户敏感信息，如手机号）、alipay（获取支付宝用户基础信息）<br>
                                         code 必填，第三方code码，当type为wechat、alipay时必填

@@ -11,12 +11,11 @@ class Test{
         $this->index();
     }
     public function index(){
-        global $config;
         $do=empty($_GET["do"]) ? "handle" : $_GET["do"];
-        $api=Data::QueryData("cms_admin","","","id asc","1")["querydata"][0];
+        $app=Data::QueryData("cms_api_app","appid,appsecret","status=1","","1")["querydata"][0] ?? array();
         $this->app->Runin(
-            array("do","key","secret"),
-            array($do,md5($config["UTCODE"]),$api["username"].",".$api["password"])
+            array("do","appid","appsecret","hasapp"),
+            array($do,(string)($app["appid"] ?? ""),(string)($app["appsecret"] ?? ""),empty($app) ? 0 : 1)
         );
         $this->app->Open("test.cms");
     }
