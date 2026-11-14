@@ -28,6 +28,23 @@
                     </ul>
                 </div>
                 <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="border-bottom">应用密钥（在「接口-应用密钥」中管理；sign = md5(appsecret + time + nonce)，nonce 一次一用）</p>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control input-square" id="utappid" value="<{$appid}>" placeholder="AppID">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control input-square" id="utappsecret" value="<{$appsecret}>" placeholder="AppSecret">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-7">
                         <div class="card">
                             <div class="card-body">
@@ -88,8 +105,6 @@
     </div>
 <{include "$pubtemp/foot.cms"}>
 <script>
-    var appid="<{$appid}>";
-    var appsecret="<{$appsecret}>";
     function utnonce(){
         var s="";
         var chars="0123456789abcdef";
@@ -97,11 +112,14 @@
         return s;
     }
     function utsign(){
+        var appsecret=$("#utappsecret").val()||"";
         var t=Math.floor(Date.now()/1000);
         var nonce=utnonce();
         return {t:t,nonce:nonce,sign:md5(appsecret+t+nonce)};
     }
     function runtest(){
+        var appid=$("#utappid").val()||"";
+        var appsecret=$("#utappsecret").val()||"";
         if(!appid || !appsecret){
             $("#result").html("<code>请先在「应用密钥」中添加并启用应用</code>");
             return;
@@ -179,8 +197,9 @@
                 XMLHttpRequest.setRequestHeader("sign",h0.sign);
             },
             success: function(res){
-                if(res && res[0] && res[0].secret){
-                    send(res[0].secret);
+                var sec=(res && res.secret) ? res.secret : ((res && res[0] && res[0].secret) ? res[0].secret : "");
+                if(sec){
+                    send(sec);
                 }else{
                     $("#result").html("<code>"+JSON.stringify(res)+"</code>");
                 }
