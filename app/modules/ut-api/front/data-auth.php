@@ -47,6 +47,10 @@ class Data_auth{
                 $minipro=new DouyinMiniPro($set["ttrteid"],$set["ttrtesecret"]);
                 $res=$minipro->ChkLogin($code,($_GET["anonymous_code"] ?? ""));
                 $result=is_array($res) ? json_encode($res) : '[{"error":1}]';
+            }elseif($action=="tt-phone"){
+                $minipro=new DouyinMiniPro($set["ttrteid"],$set["ttrtesecret"]);
+                $res=$minipro->GetPhone($_POST["code"] ?? "");
+                $result=(isset($res["err_no"]) && $res["err_no"]==0 && isset($res["data"])) ? json_encode($res["data"]) : json_encode($res);
             }elseif($action=="alipay"){
                 try{
                     $ali=new AliOpen($set["alrteid"],$set["alapppubkey"],$set["alpaypubkey"]);
