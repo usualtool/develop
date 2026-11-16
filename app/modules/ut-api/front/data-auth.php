@@ -1,8 +1,8 @@
 <?php
 namespace Controller\Ut_api\Front;
-use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Wechat\MiniPro;
+use usualtool\Douyin\MiniPro as DouyinMiniPro;
 use usualtool\AliOpen\AliOpen;
 use Model\Ut_api\Verify;
 class Data_auth{
@@ -14,10 +14,14 @@ class Data_auth{
         (new Verify())->Check();
         /*
          * 小程序授权登录等相关
-         * 支持微信、支付宝
+         * 支持微信、支付宝、抖音
         **/
         if(Data::ModTable("cms_routine")){
-            $set=Data::QueryData("cms_routine","","","","1")["querydata"][0];
+            $set=Data::QueryData("cms_routine","","","","1")["querydata"][0] ?? "";
+            if(empty($set)){
+                echo'[{"error":1}]';
+                return;
+            }
             $code=($_GET["code"] ?? "");
             $action=($_GET["action"] ?? "");
             if($action=="wechat"){
@@ -40,25 +44,11 @@ class Data_auth{
                 $res=$minipro->GetPhone($_POST["code"] ?? "");
                 $result=(isset($res["errcode"]) && $res["errcode"]==0 && isset($res["phone_info"])) ? json_encode($res["phone_info"]) : json_encode($res);
             }elseif($action=="tt"){
-                $body=json_encode(array("appid"=>$set["ttrteid"],"secret"=>$set["ttrtesecret"],"code"=>$code));
-                $ch=curl_init("https://developer.toutiao.com/api/apps/v2/jscode2session");
-                curl_setopt_array($ch,array(
-                    CURLOPT_RETURNTRANSFER=>1,
-                    CURLOPT_POST=>1,
-                    CURLOPT_POSTFIELDS=>$body,
-                    CURLOPT_HTTPHEADER=>array("Content-Type: application/json"),
-                    CURLOPT_SSL_VERIFYPEER=>false,
-                    CURLOPT_SSL_VERIFYHOST=>false,
-                    CURLOPT_TIMEOUT=>10
-                ));
-                $out=curl_exec($ch);
-                if(PHP_VERSION_ID<80000){curl_close($ch);}
-                $result=$out;
+                $minipro=new DouyinMiniPro($set["ttrteid"],$set["ttrtesecret"]);
+                $res=$minipro->ChkLogin($code,($_GET["anonymous_code"] ?? ""));
+                $result=is_array($res) ? json_encode($res) : '[{"error":1}]';
             }elseif($action=="alipay"){
                 try{
-                    $privkey=trim((string)$set["alapppubkey"]);
-                    $isPem = strpos($privkey,"PRIVATE KEY")!==false;
-                    $isRawBase64 = !$isPem && preg_match('/^[A-Za-z0-9+\/=\s]{300,}$/',$privkey);
                     $ali=new AliOpen($set["alrteid"],$set["alapppubkey"],$set["alpaypubkey"]);
                     $info=$ali->GetUser($code);
                     if(!empty($info["user_id"])){
