@@ -17,7 +17,7 @@ class Data_robot{
             $model = $data['model'] ?? 'GLM-4.7-FlashX';
             $stream = $data['stream'] ?? false;
             $sessionid = $data['sessionid'] ?? '';
-            if(!class_exists('usaltool\\Ai\\Ai')){
+            if(!class_exists('usualtool\\Ai\\Ai')){
                 echo json_encode(array(array("error"=>"AI extension not installed")),JSON_UNESCAPED_UNICODE);
                 return;
             }
