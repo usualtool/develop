@@ -22,6 +22,18 @@ class Data_robot{
                 return;
             }
             $ai = new Ai();
+            $type = strtolower(trim((string)($data['type'] ?? $data['action'] ?? '')));
+            $prompt = trim((string)($data['prompt'] ?? ''));
+            if($type === 'image' || ($type === '' && empty($messages) && $prompt !== '')){
+                $options = array();
+                foreach(array('size','quality','style','n','response_format','user') as $key){
+                    if(isset($data[$key])){
+                        $options[$key] = $data[$key];
+                    }
+                }
+                echo $ai->Image($prompt, (string)($data['model'] ?? ''), $options);
+                return;
+            }
             echo $ai->Chat($messages, $model, $stream, $sessionid);
         }
     }
