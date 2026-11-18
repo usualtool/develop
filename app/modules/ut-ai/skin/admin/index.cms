@@ -1,0 +1,175 @@
+<{include "$pubtemp/head.cms"}> 
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title"><{$title}></h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home"><a href="./"><i class="fa fa-home"></i></a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><a href="<{url=>Link($module)}>">AI能力</a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><{$title}></li>
+                        <li class="nav-item"><{item=>$module,$backitem}></li>
+                    </ul>
+                </div>
+                <form method="post" action="<{url=>Link($module,'','do=save')}>">
+                <style>
+                /* 主题 .form-group 的 padding 为 10px，抵消 row 的 -10px 后与 Tab 边线对齐 */
+                .tab-content .row{margin-left:-10px;margin-right:-10px}
+                </style>
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tab-ai" role="tab">上游对话配置</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-image" role="tab">生图配置</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tab-rag" role="tab">知识库 RAG 配置</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tab-ai" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>对话补全接口地址</label>
+                                        <input type="text" name="upstream_base_url" class="form-control" value="<{$config->upstream_base_url}>">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>上游 API Key</label>
+                                        <input type="text" name="upstream_api_key" class="form-control" value="<{$config->upstream_api_key}>">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>代理 API 密钥（可选）</label>
+                                        <input type="text" name="my_api_key" class="form-control" value="<{$config->my_api_key}>">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>默认模型</label>
+                                        <input type="text" name="index_model" class="form-control" value="<{$config->index_model}>">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>允许的模型列表（逗号分隔）</label>
+                                        <input type="text" name="allowed_models" class="form-control" value="<{$config->allowed_models_text}>">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>系统提示词（\n 表示换行）</label>
+                                        <textarea name="system_prompt" class="form-control" rows="4"><{$config->system_prompt}></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="hidden" name="enable_thinking" value="0">
+                                                <input class="form-check-input" type="checkbox" name="enable_thinking" value="1" <{if $config["enable_thinking"]}>checked<{/if}>>
+                                                <span class="form-check-sign">启用深度思考</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tab-image" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>生图接口地址</label>
+                                        <input type="text" name="image_base_url" class="form-control" value="<{$config->image_base_url}>" placeholder="留空使用对话接口地址">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>生图 API Key</label>
+                                        <input type="text" name="image_api_key" class="form-control" value="<{$config->image_api_key}>" placeholder="留空使用对话 API Key">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>生图模型</label>
+                                        <input type="text" name="image_model" class="form-control" value="<{$config->image_model}>" placeholder="cogview-3-flash">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>默认图片尺寸</label>
+                                        <input type="text" name="image_size" class="form-control" value="<{$config->image_size}>" placeholder="1024x1024">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tab-rag" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="hidden" name="knowledge_enabled" value="0">
+                                                <input class="form-check-input" type="checkbox" name="knowledge_enabled" value="1" <{if $config["knowledge_enabled"]}>checked<{/if}>>
+                                                <span class="form-check-sign">启用知识库</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="hidden" name="knowledge_enable_rerank" value="0">
+                                                <input class="form-check-input" type="checkbox" name="knowledge_enable_rerank" value="1" <{if $config["knowledge_enable_rerank"]}>checked<{/if}>>
+                                                <span class="form-check-sign">启用重排序</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>知识库接口地址</label>
+                                        <input type="text" name="knowledge_base_url" class="form-control" value="<{$config->knowledge_base_url}>">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>知识库 API Key</label>
+                                        <input type="text" name="knowledge_api_key" class="form-control" value="<{$config->knowledge_api_key}>">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>知识库ID（逗号分隔）</label>
+                                        <input type="text" name="knowledge_base_ids" class="form-control" value="<{$config->knowledge_base_ids_text}>">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 form-group">
+                                        <label>初筛召回</label>
+                                        <input type="number" name="knowledge_top_k" class="form-control" value="<{$config->knowledge_top_k}>">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>精排最终</label>
+                                        <input type="number" name="knowledge_top_n" class="form-control" value="<{$config->knowledge_top_n}>">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>知识库模型</label>
+                                        <input type="text" name="knowledge_model" class="form-control" value="<{$config->knowledge_model}>">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="hidden" name="knowledge_enable_thinking" value="0">
+                                                <input class="form-check-input" type="checkbox" name="knowledge_enable_thinking" value="1" <{if $config["knowledge_enable_thinking"]}>checked<{/if}>>
+                                                <span class="form-check-sign">知识库启用思考链</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-round">保存配置</button>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<{include "$pubtemp/foot.cms"}>

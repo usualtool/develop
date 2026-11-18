@@ -1,0 +1,66 @@
+<{include "$pubtemp/head.cms"}> 
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title"><{$title}></h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home"><a href="./"><i class="fa fa-home"></i></a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><a href="<{url=>Link($module)}>">AI能力</a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><a href="<{url=>Link($module,'log')}>">执行日志</a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item">#<{$log->id}></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">基本信息</h4></div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr><th style="width:140px">任务 ID</th><td><a href="<{url=>Link($module,'taskx','id='.$log['task_id'])}>"><{$log->task_id}></a></td></tr>
+                                    <tr><th>模型</th><td><{$log->model}></td></tr>
+                                    <tr><th>耗时</th><td><{$log->duration}> ms</td></tr>
+                                    <tr><th>Token</th><td><{$log->token_usage}></td></tr>
+                                    <tr><th>时间</th><td><{$log->addtime}></td></tr>
+                                    <tr><th>错误</th><td style="color:#c00"><{$log->error_msg}></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <{if $log["is_image"]}>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">生成图片</h4></div>
+                    <div class="card-body text-center">
+                        <a href="<{$log->result}>" target="_blank"><img src="<{$log->result}>" style="max-width:100%;border-radius:6px"></a>
+                    </div>
+                </div>
+                <{/if}>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">完整结果</h4></div>
+                    <div class="card-body">
+                        <pre style="white-space:pre-wrap;word-break:break-word;margin:0"><{$log->result_html}></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">思考过程</h4></div>
+                    <div class="card-body">
+                        <pre style="white-space:pre-wrap;word-break:break-word;margin:0"><{$log->reasoning_html}></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">请求消息</h4></div>
+                    <div class="card-body">
+                        <pre style="white-space:pre-wrap;word-break:break-word;margin:0"><{$log->messages_html}></pre>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <a href="<{url=>Link($module,'log')}>" class="btn btn-default btn-round">返回日志列表</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<{include "$pubtemp/foot.cms"}>

@@ -1,0 +1,56 @@
+<{include "$pubtemp/head.cms"}> 
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title"><{$title}></h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home"><a href="./"><i class="fa fa-home"></i></a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><a href="<{url=>Link($module)}>">AI能力</a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><{$title}></li>
+                        <li class="nav-item"><{item=>$module,$backitem}></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title">执行日志</h4></div>
+                    <div class="card-body">
+                        <{if $task_id>0}>
+                        <div class="alert alert-info">当前只显示任务 #<{$task_id}> 的执行日志，<a href="<{url=>Link($module,'log')}>">查看全部日志</a></div>
+                        <{/if}>
+                        <div class="table-responsive">
+                            <table class="display table table-striped table-hover">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th>任务 ID</th>
+                                        <th>模型</th>
+                                        <th>耗时(ms)</th>
+                                        <th>错误</th>
+                                        <th>时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <{loop=>$logs $row}>
+                                    <tr>
+                                        <td><{$row->task_id}></td>
+                                        <td><{$row->model}></td>
+                                        <td><{$row->duration}></td>
+                                        <td style="color:#c00"><{$row->error_msg}></td>
+                                        <td><{$row->addtime}></td>
+                                        <td><a href="<{url=>Link($module,'log','id='.$row['id'])}>" class="btn btn-sm btn-info">查看全文</a></td>
+                                    </tr>
+                                    <{/loop}>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-12 right"><{page=>total,curpage,listnum,pagelink}></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<{include "$pubtemp/foot.cms"}>

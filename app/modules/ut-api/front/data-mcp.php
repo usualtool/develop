@@ -404,6 +404,22 @@ class Data_mcp{
                 ],
             ];
             $defs[] = [
+                'name'        => 'write_data',
+                'description' => '写入一条数据到白名单表：自动剔除保护字段、校验必填字段与字段类型，时间字段由服务端按入库时间填充，图片字段留空，返回新记录 ID。表须在 cms_api.opentable 内。',
+                'inputSchema' => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'table' => ['type' => 'string', 'description' => '目标表名，须在 cms_api.opentable 白名单内'],
+                        'data'  => [
+                            'type'                 => 'object',
+                            'description'          => '要写入的字段键值对，字段名须与表结构一致，未知字段会被忽略',
+                            'additionalProperties' => true,
+                        ],
+                    ],
+                    'required'   => ['table', 'data'],
+                ],
+            ];
+            $defs[] = [
                 'name'        => 'list_pages',
                 'description' => '列出当前 MCP 服务已支持的框架数据页面',
                 'inputSchema' => [
@@ -424,6 +440,25 @@ class Data_mcp{
                     $lines[] = '- ' . $page . '：' . $meta['title'] . ' —— ' . $meta['desc'];
                 }
                 return ut_text_result("已支持的数据页面：\n" . implode("\n", $lines));
+            }
+            if ($name === 'write_data') {
+                $table = isset($args['table']) && is_string($args['table']) ? trim($args['table']) : '';
+                $data  = isset($args['data']) && is_array($args['data']) ? $args['data'] : [];
+                if (!class_exists('Model\\Ut_api\\Writer')) {
+                    throw new \RuntimeException('写入服务未安装：app/modules/ut-api/model/Writer.php');
+                }
+                $writer = new \Model\Ut_api\Writer();
+                $saved  = $writer->Insert($table, $data);
+                if (empty($saved['ok'])) {
+                    return [
+                        'content' => [['type' => 'text', 'text' => '写入失败：' . (string) $saved['error']]],
+                        'isError' => true,
+                    ];
+                }
+                return ut_text_result(
+                    '已写入 ' . $table . '，ID=' . $saved['id'] . "\n"
+                    . json_encode($saved['data'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                );
             }
             if ($name === 'get_data_query') {
                 foreach ($args as $key => $value) {
@@ -487,7 +522,7 @@ class Data_mcp{
                         'name'    => (string) $CONFIG['server_name'],
                         'version' => (string) $CONFIG['server_version'],
                     ],
-                    'instructions'    => '本服务提供框架数据查询。调用 get_data_work 获取数据概况；查询数据用 get_data_query（table/where）；其他页面用 get_page 指定 page 名。',
+                    'instructions'    => '本服务提供框架数据查询与写入。调用 get_data_work 获取数据概况；查询数据用 get_data_query（table/where）；写入数据用 write_data（table/data，表须在白名单内）；其他页面用 get_page 指定 page 名。',
                 ]);
             }
             if ($method === 'tools/list') {

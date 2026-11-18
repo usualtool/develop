@@ -24,6 +24,73 @@ CREATE TABLE `cms_admin_role` (
   `module` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `cms_ai`;
+CREATE TABLE `cms_ai` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `upstream_base_url` varchar(255) DEFAULT NULL,
+  `upstream_api_key` varchar(255) DEFAULT NULL,
+  `my_api_key` varchar(100) DEFAULT NULL,
+  `allowed_models` varchar(500) DEFAULT NULL,
+  `index_model` varchar(100) DEFAULT NULL,
+  `system_prompt` text,
+  `enable_thinking` tinyint(1) DEFAULT 0,
+  `knowledge_enabled` tinyint(1) DEFAULT 0,
+  `knowledge_base_url` varchar(255) DEFAULT NULL,
+  `knowledge_api_key` varchar(255) DEFAULT NULL,
+  `knowledge_base_ids` varchar(500) DEFAULT NULL,
+  `knowledge_top_k` int(11) DEFAULT 8,
+  `knowledge_top_n` int(11) DEFAULT 5,
+  `knowledge_enable_rerank` tinyint(1) DEFAULT 1,
+  `knowledge_model` varchar(100) DEFAULT NULL,
+  `knowledge_enable_thinking` tinyint(1) DEFAULT 0,
+  `addtime` datetime DEFAULT NULL,
+  `updatetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `cms_ai_task`;
+CREATE TABLE `cms_ai_task` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) DEFAULT NULL,
+  `model` varchar(100) DEFAULT NULL,
+  `task_type` varchar(10) NOT NULL DEFAULT 'text',
+  `write_db` tinyint(1) NOT NULL DEFAULT 0,
+  `target_table` varchar(100) DEFAULT NULL,
+  `image_count` tinyint(4) NOT NULL DEFAULT 1,
+  `prompt` text,
+  `context` text,
+  `options` text,
+  `result` text,
+  `reasoning` text,
+  `token_usage` varchar(300) DEFAULT NULL,
+  `state` tinyint(1) DEFAULT 0,
+  `is_cron` tinyint(1) NOT NULL DEFAULT 0,
+  `cron_time` varchar(5) DEFAULT NULL,
+  `retry_count` int(11) DEFAULT 0,
+  `error_msg` varchar(500) DEFAULT NULL,
+  `last_run_time` datetime DEFAULT NULL,
+  `run_count` int(11) DEFAULT 0,
+  `createtime` datetime DEFAULT NULL,
+  `updatetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `state` (`state`),
+  KEY `createtime` (`createtime`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `cms_ai_log`;
+CREATE TABLE `cms_ai_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) DEFAULT 0,
+  `messages` text,
+  `model` varchar(100) DEFAULT NULL,
+  `result` text,
+  `reasoning` text,
+  `token_usage` varchar(300) DEFAULT NULL,
+  `error_msg` varchar(500) DEFAULT NULL,
+  `duration` int(11) DEFAULT 0,
+  `addtime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `task_id` (`task_id`),
+  KEY `addtime` (`addtime`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_api`;
 CREATE TABLE `cms_api` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

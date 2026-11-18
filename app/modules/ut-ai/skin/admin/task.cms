@@ -1,0 +1,80 @@
+<{include "$pubtemp/head.cms"}> 
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title"><{$title}></h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home"><a href="./"><i class="fa fa-home"></i></a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><a href="<{url=>Link($module)}>">AI能力</a></li>
+                        <li class="separator"><i class="fa fa-angle-double-right"></i></li>
+                        <li class="nav-item"><{$title}></li>
+                        <li class="nav-item"><{item=>$module,$backitem}></li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h4 class="card-title">AI 任务列表</h4>
+                        <div class="ml-auto">
+                            <a href="<{url=>Link($module,'run','do=batch&limit=100')}>" class="btn btn-default btn-round">手工批量执行就绪任务</a>
+                            <a href="<{url=>Link($module,'taskx')}>" class="btn btn-primary btn-round">
+                                <i class="fa fa-plus"></i> 创建任务
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p>自动执行需要创建计划任务并联动Cli命令 php usualtool task；定时循环任务会在设定的每日时间执行。</p>
+                        <div class="table-responsive">
+                            <table class="display table table-striped table-hover">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th>ID</th>
+                                        <th>标题</th>
+                                        <th>模型</th>
+                                        <th>状态</th>
+                                        <th>执行次数</th>
+                                        <th>上次执行</th>
+                                        <th>创建时间</th>
+                                        <th style="width:200px">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <{loop=>$tasks $row}>
+                                    <tr>
+                                        <td><{$row->id}></td>
+                                        <td>
+                                            <div><{$row->title}></div>
+                                            <{if $row["task_type"]=="image" || $row["write_db"]==1 || $row["is_cron"]==1}>
+                                            <div class="mt-1" style="white-space:nowrap">
+                                                <{if $row["task_type"]=="image"}><span class="badge badge-warning">生图<{if $row["image_count"]>1}>×<{$row->image_count}><{/if}></span> <{/if}>
+                                                <{if $row["write_db"]==1}><span class="badge badge-info">写表</span> <{/if}>
+                                                <{if $row["is_cron"]==1}><span class="badge badge-secondary">定时 <{$row->cron_time}></span><{/if}>
+                                            </div>
+                                            <{/if}>
+                                        </td>
+                                        <td><{$row->model}></td>
+                                        <td><{$row->state_text}></td>
+                                        <td><{$row->run_count}></td>
+                                        <td><{$row->last_run_time}></td>
+                                        <td><{$row->createtime}></td>
+                                        <td>
+                                            <p><a href="<{url=>Link($module,'run','do=one&id='.$row['id'])}>" class="btn btn-sm btn-success">手工执行</a></p>
+                                            <a href="<{url=>Link($module,'taskx','id='.$row['id'])}>" class="btn btn-sm btn-warning mr-1">编辑</a>
+                                            <a href="<{url=>Link($module,'log','task_id='.$row['id'])}>" class="btn btn-sm btn-info mr-1">日志</a>
+                                            <a href="<{url=>Link($module,'task','do=del&id='.$row['id'])}>" class="btn btn-sm btn-danger" onclick="return confirm('确认删除?')">删除</a>
+                                        </td>
+                                    </tr>
+                                    <{/loop}>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-12 right"><{page=>total,curpage,listnum,pagelink}></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<{include "$pubtemp/foot.cms"}>
