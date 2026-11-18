@@ -266,7 +266,7 @@ CREATE TABLE `oauth_jwt` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 INSERT INTO `cms_admin` VALUES (1, 0, 1, 'admin', '$2y$12$IXiotxHNFPNDQ3c.tdyvPumkb9W1d1Lr5N7ZDxWgX2cVlBx5n554W', '/assets/images/noimage.png', '2021-08-08 00:00:00');
-INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-oauth,ut-api,ut-power');
+INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-oauth,ut-api,ut-ai,ut-power');
 INSERT INTO `cms_api` VALUES (1,NULL,NULL,NULL,'password');
 INSERT INTO `cms_module` VALUES (1, 3, 'ut-frame', 'UT公共模块', 'index.php', 1, 90, 0, '', NULL, NULL);
 INSERT INTO `cms_module` VALUES (2, 3, 'ut-module', '模块', 'index.php', 1, 91, 1, '', '', '模块市场:module.php,管理模块:index.php');
