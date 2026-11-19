@@ -3,6 +3,7 @@ namespace Controller\Ut_frame\Admin;
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Lib\Route;
+use usualtool\Lib\Kernel;
 class Login{
     private $app;
     public function __construct(){
@@ -17,7 +18,7 @@ class Login{
         if($do=="out"){
             unset($_SESSION['admin']);
             unset($_SESSION['admin_id']);
-            setcookie("Nav","ut-frame");
+            Kernel::Cookie("Nav","ut-frame");
             Inc::GoUrl(Route::Link("ut-frame","login"),"登出UT Develop成功!");
         }
         if($do=="login"){
@@ -43,8 +44,8 @@ class Login{
                             $_SESSION['admin_roleid']=$rows['roleid'];
                             $_SESSION['admin_avatar']=$rows['avatar'];
                             session_regenerate_id(TRUE);
-                            setcookie("Nav","ut-frame");
-                            setcookie("Lock",0);
+                            Kernel::Cookie("Nav","ut-frame");
+                            Kernel::Cookie("Lock","0");
                             unset($_SESSION["login_fail"]);
                             unset($_SESSION["login_fail_time"]);
                             Inc::GoUrl(Route::Link("ut-frame","index"),"登陆UT Develop成功!");

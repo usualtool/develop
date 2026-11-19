@@ -3,6 +3,7 @@ namespace Controller\Ut_frame\Admin;
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 use usualtool\Lib\Route;
+use usualtool\Lib\Kernel;
 class Lock{
     private $app;
     public function __construct(){
@@ -21,7 +22,7 @@ class Lock{
             if($data["querynum"]==1){
                 $rows=$data["querydata"][0];
                 if(password_verify($password,$rows['password'])){
-                    setcookie("Lock",0);
+                    Kernel::Cookie("Lock","0");
                     $param=str_replace("____","?",$u);
                     $param=str_replace("---","/",$param);
                     $param=str_replace("___","&",$param);
