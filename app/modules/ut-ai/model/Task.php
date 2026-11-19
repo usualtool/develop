@@ -371,6 +371,7 @@ PHP;
                 }
             }
         }
+        $data=$this->Htmlify($table,$data);
         $saved=$writer->Insert($table,$data);
         if(!$saved["ok"]){
             $fail["error"]=$saved["error"];
@@ -471,6 +472,7 @@ PHP;
         }
         $savedIds=array();
         $written=array();
+        $data=$this->Htmlify($table,$data);
         foreach($img["paths"] as $path){
             $row=$data;
             $row[$imgField]=$path;
@@ -489,6 +491,47 @@ PHP;
         $fail["content"]="已生成 ".count($img["paths"])." 张图片并写入 ".$table."，ID=".implode(",",$savedIds)."\n"
             .implode("\n",$img["paths"])."\n".json_encode($written,JSON_UNESCAPED_UNICODE);
         return $fail;
+    }
+    /**
+     * 长文本字段若是纯文本，按空行转 HTML 段落，避免前台把 \n 折叠掉
+     */
+    private function Htmlify($table,$data){
+        $writer=new Writer();
+        $cols=$writer->Columns($table);
+        foreach($data as $name=>$value){
+            if(!is_string($value) || trim($value)===""){
+                continue;
+            }
+            $col=$cols[$name]??null;
+            if(!$col){
+                continue;
+            }
+            $type=strtolower((string)$col["DATA_TYPE"]);
+            if(!in_array($type,array("text","mediumtext","longtext"),true)){
+                continue;
+            }
+            $data[$name]=$this->TextToHtml($value);
+        }
+        return $data;
+    }
+    /**
+     * 纯文本转段落；已经是 HTML 的内容原样返回
+     */
+    private function TextToHtml($text){
+        $text=str_replace(array("\r\n","\r"),"\n",trim($text));
+        if(preg_match('/<(p|br|div|h[1-6]|ul|ol|li|img|table|section|article|span|a)\b[^>]*>/i',$text)){
+            return $text;
+        }
+        $parts=preg_split('/\n\s*\n/',$text);
+        $out=array();
+        foreach($parts as $p){
+            $p=trim($p);
+            if($p===""){
+                continue;
+            }
+            $out[]="<p>".nl2br(htmlspecialchars($p,ENT_QUOTES,"UTF-8"))."</p>";
+        }
+        return implode("\n",$out);
     }
     /**
      * 从回复里提取 JSON
