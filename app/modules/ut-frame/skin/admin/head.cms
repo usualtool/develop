@@ -290,6 +290,8 @@
                                                 <i class="fa fa-hands-helping"></i>
                                             <{else if $rows["mid"]=="ut-api"}>
                                                 <i class="fa fa-code-branch"></i>
+                                            <{else if $rows["mid"]=="ut-ai"}>
+                                                <i class="fa fa-brain"></i>
                                             <{else if $rows["mid"]=="ut-power"}>
                                                 <i class="fas fa-user-secret"></i>
                                             <{else}>
