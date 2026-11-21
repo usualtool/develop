@@ -277,5 +277,5 @@ INSERT INTO `cms_module` VALUES (6, 3, 'ut-system', '配置', 'index.php', 1, 95
 INSERT INTO `cms_module` VALUES (7, 3, 'ut-data', '数据', 'index.php', 1, 96, 1, '', '', '表管理:index.php,SQL查询:sql.php,备份还原:backup.php');
 INSERT INTO `cms_module` VALUES (8, 3, 'ut-oauth', 'OAuth', 'index.php', 1, 97, 1, '', '', '管理应用:index.php,授权记录:log.php,权限集合:role.php,用户列表:user.php');
 INSERT INTO `cms_module` VALUES (9, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口配置:index.php,应用密钥:app.php,在线调试:test.php,Secret票据:secret.php,通行日志:pass.php');
-INSERT INTO `cms_module` VALUES (9, 3, 'ut-ai', 'AI能力', 'index.php', 1, 99, 1, '', '', 'AI配置:index.php,AI任务:task.php,执行日志:log.php');
-INSERT INTO `cms_module` VALUES (10, 3, 'ut-power', '权限', 'index.php', 1, 100, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');
+INSERT INTO `cms_module` VALUES (10, 3, 'ut-ai', 'AI能力', 'index.php', 1, 99, 1, '', '', 'AI配置:index.php,AI任务:task.php,执行日志:log.php');
+INSERT INTO `cms_module` VALUES (11, 3, 'ut-power', '权限', 'index.php', 1, 100, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');
