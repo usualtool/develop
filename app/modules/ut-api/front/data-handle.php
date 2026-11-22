@@ -1,6 +1,7 @@
 <?php
 namespace Controller\Ut_api\Front;
 use usualtool\Lib\Data;
+use usualtool\Lib\Inc;
 use Model\Ut_api\Verify;
 class Data_handle{
     public function __call($name,$args){
@@ -40,7 +41,16 @@ class Data_handle{
             }
         }
         $data=array_intersect_key($data,$cols);
-        $data=array_diff_key($data,array_flip(Verify::ProtectList()));
+        $protect=Verify::ProtectList();
+        if(array_key_exists("password",$data)){
+            $raw=$data["password"];
+            if($raw===null || $raw==="" || $raw==="0" || $raw===0){
+                $raw=Inc::GetRandomString(8);
+            }
+            $data["password"]=password_hash((string)$raw,PASSWORD_BCRYPT,array("cost"=>12));
+            $protect=array_values(array_diff($protect,array("password")));
+        }
+        $data=array_diff_key($data,array_flip($protect));
         if($action!="del" && empty($data)){
             echo'[{"error":1}]';
             return;
