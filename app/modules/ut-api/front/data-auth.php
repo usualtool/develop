@@ -12,65 +12,63 @@ class Data_auth{
     public function index(){
         global $config;
         (new Verify())->Check();
+        $l=$_GET["l"] ?? $_POST["l"] ?? "";
+        $action=$_GET["action"] ?? $_POST["action"] ?? "";
         /*
-         * 小程序授权登录等相关
+         * 小程序相关
          * 支持微信、支付宝、抖音
         **/
-        if(Data::ModTable("cms_routine")){
-            $set=Data::QueryData("cms_routine","","","","1")["querydata"][0] ?? "";
-            if(empty($set)){
-                echo'[{"error":1}]';
-                return;
+        if(empty($l) || $l=="minipro"){
+            $mini=Data::QueryData("cms_routine","","","","1")["querydata"][0] ?? "";
+            $code=$_GET["code"] ?? "";
+            if(strpos($action,"wechat")!==false){
+                $wechat=new MiniPro($mini["wxrteid"],$mini["wxrtesecret"]);
+            }elseif(strpos($action,"douyin")!==false){
+                $douyin=new DouyinMiniPro($mini["ttrteid"],$mini["ttrtesecret"]);
+            }else{
+                $alipay=new AliOpen($mini["alrteid"],$mini["alapppubkey"],$mini["alpaypubkey"]);
             }
-            $code=($_GET["code"] ?? "");
-            $action=($_GET["action"] ?? "");
             if($action=="wechat"){
-                $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
-                $result=json_encode($minipro->ChkLogin($code));
+                $result=json_encode($wechat->ChkLogin($code));
             }elseif($action=="wechat-crypt"){
-                $encrypteddata=$_POST["encrypteddata"] ?? "";
-                $iv=$_POST["iv"] ?? "";
-                $openid=($_POST["openid"] ?? "");
-                $thirdkey=$_POST["thirdkey"] ?? "";
-                $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
-                $errcode=$minipro->DecryptData($thirdkey,$encrypteddata,$iv,$data);
-                if($errcode==0){
-                    $result=$data;
-                }else{
-                    $result=$errcode;
-                }
+                $errcode=$wechat->DecryptData($_POST["thirdkey"] ?? "",$_POST["encrypteddata"] ?? "",$_POST["iv"] ?? "",$data);
+                $result=$errcode==0 ? $data : $errcode;
             }elseif($action=="wechat-phone"){
-                $minipro=new MiniPro($set["wxrteid"],$set["wxrtesecret"]);
-                $res=$minipro->GetPhone($_POST["code"] ?? "");
+                $res=$wechat->GetPhone($_POST["code"] ?? "");
                 $result=(isset($res["errcode"]) && $res["errcode"]==0 && isset($res["phone_info"])) ? json_encode($res["phone_info"]) : json_encode($res);
-            }elseif($action=="tt"){
-                $minipro=new DouyinMiniPro($set["ttrteid"],$set["ttrtesecret"]);
-                $res=$minipro->ChkLogin($code,($_GET["anonymous_code"] ?? ""));
+            }elseif($action=="douyin"){
+                $res=$douyin->ChkLogin($code,$_GET["anonymous_code"] ?? "");
                 $result=is_array($res) ? json_encode($res) : '[{"error":1}]';
-            }elseif($action=="tt-phone"){
-                $minipro=new DouyinMiniPro($set["ttrteid"],$set["ttrtesecret"]);
-                $res=$minipro->GetPhone($_POST["code"] ?? "");
+            }elseif($action=="douyin-phone"){
+                $res=$douyin->GetPhone($_POST["code"] ?? "");
                 $result=(isset($res["err_no"]) && $res["err_no"]==0 && isset($res["data"])) ? json_encode($res["data"]) : json_encode($res);
             }elseif($action=="alipay"){
                 try{
-                    $ali=new AliOpen($set["alrteid"],$set["alapppubkey"],$set["alpaypubkey"]);
-                    $info=$ali->GetUser($code);
-                    if(!empty($info["user_id"])){
-                        $result=json_encode($info);
-                    }else{
-                        $result='[{"error":1}]';
-                    }
+                    $info=$alipay->GetUser($code);
+                    $result=!empty($info["user_id"]) ? json_encode($info) : '[{"error":1}]';
                 }catch(\Throwable $e){
                     $result=json_encode(array("error_response"=>array("code"=>"local-error","msg"=>"data-auth error","sub_msg"=>$e->getMessage())));
                 }
             }else{
-                $appid="";
-                $appkey="";
-                $result="0";
+                $result=json_encode(["error"=>1]);
             }
-            echo$result;
-        }else{
-            echo'[{"error":1}]';
+            echo $result;
+        /*
+         * 账号相关
+         * 支持可视包超管和会员账号
+        **/
+        }elseif($l=="account"){
+            $username=trim((string)($_GET["username"] ?? $_POST["username"] ?? ""));
+            $password=(string)($_GET["password"] ?? $_POST["password"] ?? "");
+            $table=$action=="member" ? "cms_member" : ($action=="admin" ? "cms_admin" : "");
+            $result=1;
+            if($table!=="" && $username!=="" && $password!==""):
+                $row=Data::QueryData($table,"","username=?","","1",array($username))["querydata"][0] ?? "";
+                if(!empty($row) && password_verify($password,$row["password"]) && ($table=="cms_member" || $row["state"]!=1)):
+                    $result=0;
+                endif;
+            endif;
+            echo json_encode(["error"=>$result]);
         }
     }
 }

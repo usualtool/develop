@@ -12,7 +12,7 @@ class Data_lang{
         (new Verify())->Check();
         $words=($_GET["word"] ?? "");
         $module=($_GET["module"] ?? "");
-        $lg=empty($_GET["lang"]) ? 1 : ($_GET["lang"]);
+        $lg=empty($_GET["lang"]) ? "zh" : ($_GET["lang"]);
         if(!file_exists(OPEN_ROOT."/lang/lg-".$lg.".json")){
             echo json_encode(array(array("error"=>"lang not found")),JSON_UNESCAPED_UNICODE);
             return;
@@ -25,7 +25,6 @@ class Data_lang{
                     $thisword[]=array("word"=>$word[$i]);
                     continue;
                 }
-                setcookie("Language",$lg);
                 $thisword[]=array("word"=>Lang::ModLangData($word[$i],$module));
             }else{
                 $thisword[]=array("word"=>Lang::LangData($word[$i],$lg));
