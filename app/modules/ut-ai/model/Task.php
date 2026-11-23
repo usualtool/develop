@@ -188,7 +188,7 @@ PHP;
                 $imgOptions["size"]=$size;
             }
             $img=$this->RunImage($imgPrompt,$imgModel,$imgOptions);
-            $result=array("content"=>implode("\n",$img["paths"]),"reasoning"=>"","usage"=>array(),"error"=>$img["error"]);
+            $result=array("content"=>implode(",",$img["paths"]),"reasoning"=>"","usage"=>array(),"error"=>$img["error"]);
             $model=$imgModel!==""?$imgModel:"image";
             $messages=array(array("role"=>"user","content"=>"生图：".$imgPrompt."（".count($img["paths"])." 张）"));
         }else{
@@ -470,26 +470,17 @@ PHP;
                 $data=$map;
             }
         }
-        $savedIds=array();
-        $written=array();
         $data=$this->Htmlify($table,$data);
-        foreach($img["paths"] as $path){
-            $row=$data;
-            $row[$imgField]=$path;
-            $saved=$writer->Insert($table,$row,array($imgField));
-            if(!$saved["ok"]){
-                $this->RemoveImages(array_slice($img["paths"],count($savedIds)));
-                $fail["error"]=$saved["error"];
-                if(!empty($savedIds)){
-                    $fail["error"].="（已写入 ID：".implode(",",$savedIds)."）";
-                }
-                return $fail;
-            }
-            $savedIds[]=$saved["id"];
-            $written[]=$saved["data"];
+        $row=$data;
+        $row[$imgField]=implode(",",$img["paths"]);
+        $saved=$writer->Insert($table,$row,array($imgField));
+        if(!$saved["ok"]){
+            $this->RemoveImages($img["paths"]);
+            $fail["error"]=$saved["error"];
+            return $fail;
         }
-        $fail["content"]="已生成 ".count($img["paths"])." 张图片并写入 ".$table."，ID=".implode(",",$savedIds)."\n"
-            .implode("\n",$img["paths"])."\n".json_encode($written,JSON_UNESCAPED_UNICODE);
+        $fail["content"]="已生成 ".count($img["paths"])." 张图片并写入 ".$table."，ID=".$saved["id"]."\n"
+            .implode(",",$img["paths"])."\n".json_encode($saved["data"],JSON_UNESCAPED_UNICODE);
         return $fail;
     }
     /**
