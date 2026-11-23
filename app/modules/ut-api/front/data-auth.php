@@ -1,6 +1,7 @@
 <?php
 namespace Controller\Ut_api\Front;
 use usualtool\Lib\Data;
+use usualtool\Lib\Inc;
 use usualtool\Wechat\MiniPro;
 use usualtool\Douyin\MiniPro as DouyinMiniPro;
 use usualtool\AliOpen\AliOpen;
@@ -55,20 +56,54 @@ class Data_auth{
             echo $result;
         /*
          * 账号相关
-         * 支持可视包超管和会员账号
+         * 支持可视包超管和会员模块
         **/
         }elseif($l=="account"){
+            if($action=="check"){
+                $secret=trim((string)($_GET["secret"] ?? $_POST["secret"] ?? ""));
+                $result=1;
+                $expire=0;
+                if(preg_match('/^[a-f0-9]{48}$/',$secret)){
+                    $appid=trim((string)($_SERVER["HTTP_APPID"] ?? ""));
+                    $row=Data::QueryData("cms_api_secret","addtime,ip","secret=? and usetime is null and appid=?","","1",array($secret,$appid))["querydata"][0] ?? "";
+                    if(!empty($row)){
+                        $age=time()-strtotime((string)$row["addtime"]);
+                        if($age>=0 && $age<86400 && trim((string)$row["ip"])===Inc::GetIp()){
+                            $result=0;
+                            $expire=86400-$age;
+                        }else{
+                            Data::RunYu("delete from `cms_api_secret` where secret=? and usetime is null",array($secret));
+                        }
+                    }
+                }
+                echo json_encode(["error"=>$result,"expire"=>$expire]);
+                return;
+            }
+            if($action=="logout"){
+                $secret=trim((string)($_GET["secret"] ?? $_POST["secret"] ?? ""));
+                if(preg_match('/^[a-f0-9]{48}$/',$secret)){
+                    $appid=trim((string)($_SERVER["HTTP_APPID"] ?? ""));
+                    Data::RunYu("delete from `cms_api_secret` where secret=? and usetime is null and appid=?",array($secret,$appid));
+                }
+                echo json_encode(["error"=>0]);
+                return;
+            }
             $username=trim((string)($_GET["username"] ?? $_POST["username"] ?? ""));
             $password=(string)($_GET["password"] ?? $_POST["password"] ?? "");
             $table=$action=="member" ? "cms_member" : ($action=="admin" ? "cms_admin" : "");
-            $result=1;
-            if($table!=="" && $username!=="" && $password!==""):
+            $secret="";
+            if($table!=="" && $username!=="" && $password!==""){
                 $row=Data::QueryData($table,"","username=?","","1",array($username))["querydata"][0] ?? "";
-                if(!empty($row) && password_verify($password,$row["password"]) && ($table=="cms_member" || $row["state"]!=1)):
-                    $result=0;
-                endif;
-            endif;
-            echo json_encode(["error"=>$result]);
+                if(!empty($row) && password_verify($password,$row["password"]) && ($table=="cms_member" || $row["state"]!=1)){
+                    Data::RunYu("delete from `cms_api_secret` where appid=? and ip=? and usetime is null",array(trim((string)($_SERVER["HTTP_APPID"] ?? "")),Inc::GetIp()));
+                    if(mt_rand(1,20)===1){
+                        Data::RunYu("delete from `cms_api_secret` where usetime is null and addtime<?",array(date("Y-m-d H:i:s",time()-172800)));
+                    }
+                    $secret=bin2hex(random_bytes(24));
+                    Data::RunYu("insert ignore into `cms_api_secret` (secret,addtime,ip,appid) values (?,?,?,?)",array($secret,date("Y-m-d H:i:s"),Inc::GetIp(),trim((string)($_SERVER["HTTP_APPID"] ?? ""))));
+                }
+            }
+            echo json_encode(["error"=>$secret==="" ? 1 : 0,"secret"=>$secret]);
         }
     }
 }
