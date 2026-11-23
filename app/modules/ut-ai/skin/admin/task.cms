@@ -53,7 +53,7 @@
                                             </div>
                                             <{/if}>
                                         </td>
-                                        <td><{$row->model}></td>
+                                        <td><{if empty($row["model"])}>默认<{else}><{$row->model}><{/if}></td>
                                         <td><{$row->state_text}></td>
                                         <td><{$row->run_count}></td>
                                         <td><{$row->last_run_time}></td>
