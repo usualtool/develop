@@ -3,7 +3,10 @@ namespace Model\Ut_api;
 use usualtool\Lib\Inc;
 use usualtool\Lib\Data;
 class Verify{
-    public function Check($act=""){
+    /**
+     * 闸门
+     */
+    public function Gate(){
         global $config;
         header('Content-Type: application/json;charset=utf-8');
         $headers=$_SERVER;
@@ -11,21 +14,22 @@ class Verify{
         $referer=$headers["HTTP_REFERER"] ?? "";
         $api=Data::QueryData("cms_api","","","","1")["querydata"][0];
         $white=explode(",",$api["white"]);
-        $opentable=explode(",",$api["opentable"]);
         if(Inc::Contain(parse_url($origin,PHP_URL_HOST),$white)){
             header('Access-Control-Allow-Origin: '.$origin);
         }
         if(!Inc::Contain($config["APPURL"],$referer) && !Inc::Contain(parse_url($referer,PHP_URL_HOST),$white)){
             Inc::GoUrl('','[{"error":"Origin Error"}]');
         }
-        if(!isset($headers["HTTP_TIME"])){
-            Inc::GoUrl('','[{"error":"Time Empty"}]');
-        }
-        $time=$headers["HTTP_TIME"];
-        $t=preg_match('/^\d{9,11}$/',trim($time)) ? (int)trim($time) : strtotime(trim($time));
-        if($t===false || $t<=0 || abs(time()-$t)>300){
-            Inc::GoUrl('','[{"error":"Time Error"}]');
-        }
+        return $api;
+    }
+    /**
+     * 验签
+     */
+    public function Check($act=""){
+        global $config;
+        $api=$this->Gate();
+        $opentable=explode(",",$api["opentable"]);
+        $headers=$_SERVER;
         if(!isset($headers["HTTP_APPID"])){
             Inc::GoUrl('','[{"error":"Appid Empty"}]');
         }
@@ -33,17 +37,6 @@ class Verify{
         if(!preg_match('/^[A-Za-z0-9_\-]{1,100}$/',$appid)){
             Inc::GoUrl('','[{"error":"Appid Error"}]');
         }
-        if(!isset($headers["HTTP_NONCE"])){
-            Inc::GoUrl('','[{"error":"Nonce Empty"}]');
-        }
-        $nonce=trim($headers["HTTP_NONCE"]);
-        if(!preg_match('/^[A-Za-z0-9]{8,64}$/',$nonce)){
-            Inc::GoUrl('','[{"error":"Nonce Error"}]');
-        }
-        if(!isset($headers["HTTP_SIGN"])){
-            Inc::GoUrl('','[{"error":"Sign Empty"}]');
-        }
-        $sign=trim($headers["HTTP_SIGN"]);
         $app=Data::QueryData("cms_api_app","appsecret,bindip","appid=? and status=1","","1",array($appid));
         if($app["querynum"]<=0){
             Inc::GoUrl('','[{"error":"Appid Error"}]');
@@ -56,48 +49,13 @@ class Verify{
                 Inc::GoUrl('','[{"error":"IP Error"}]');
             }
         }
-        $vsign=md5($approw["appsecret"].$t.$nonce);
-        if(!hash_equals($vsign,$sign)){
-            Inc::GoUrl('','[{"error":"Sign Error"}]');
+        if(in_array($act,array("add","mon","del"))){
+            $consume=$this->CheckSecret($headers,$appid);
+        }else{
+            $this->CheckSign($headers,$appid,(string)$approw["appsecret"]);
+            $consume="";
         }
-        Data::RunYu("insert ignore into `cms_api_nonce` (appid,nonce,addtime) values (?,?,?)",array($appid,$nonce,date('Y-m-d H:i:s')));
-        $rc=Data::RunYu("select row_count() as n",array());
-        if((int)($rc["querydata"][0]["n"] ?? 0)!==1){
-            Inc::GoUrl('','[{"error":"Nonce Replayed"}]');
-        }
-        if(mt_rand(1,20)===1){
-            Data::RunYu("delete from `cms_api_nonce` where addtime<?",array(date('Y-m-d H:i:s',time()-600)));
-        }
-        $consume="";
         $table="";
-        $action=($_POST["action"] ?? "");
-        if($action=="add" || $action=="mon" || $action=="del"){
-            if(!isset($headers["HTTP_SECRET"])){
-                Inc::GoUrl('','[{"error":"Secret Empty"}]');
-            }
-            $secret=trim($headers["HTTP_SECRET"]);
-            if(!preg_match('/^[a-f0-9]{48}$/',$secret)){
-                Inc::GoUrl('','[{"error":"Secret Error"}]');
-            }
-            $data=Data::QueryData("cms_api_secret","id,addtime,usetime,ip,appid","secret=?","","1",array($secret));
-            if($data["querynum"]<=0){
-                Inc::GoUrl('','[{"error":"Secret Error"}]');
-            }
-            $row=$data["querydata"][0];
-            if(!empty($row["usetime"])){
-                Inc::GoUrl('','[{"error":"Secret Used"}]');
-            }
-            if(strtotime($row["addtime"])<time()-300){
-                Inc::GoUrl('','[{"error":"Secret Expired"}]');
-            }
-            if(trim((string)$row["ip"])!==Inc::GetIp()){
-                Inc::GoUrl('','[{"error":"Secret IP Error"}]');
-            }
-            if(trim((string)$row["appid"])!==$appid){
-                Inc::GoUrl('','[{"error":"Secret Appid Error"}]');
-            }
-            $consume=$secret;
-        }
         if(!empty($_POST["table"]) || !empty($_GET["table"])){
             $table=empty($_GET["table"]) ? ($_POST["table"]) : ($_GET["table"]);
             if(!in_array($table,$opentable)){
@@ -115,7 +73,7 @@ class Verify{
         }
         $where=(string)($_POST["where"] ?? ($_GET["where"] ?? ""));
         if($where!==""){
-            if(($action=="mon" || $action=="del") && substr_count($where,"?")<1){
+            if(($act=="mon" || $act=="del") && substr_count($where,"?")<1){
                 Inc::GoUrl('','[{"error":"Illegal Where"}]');
             }
             if(self::CheckPart($where)){
@@ -130,6 +88,86 @@ class Verify{
             }
         }
         self::Log($act,$table,$where,$consume);
+    }
+    /**
+     * 签名
+     */
+    private function CheckSign($headers,$appid,$appsecret){
+        if(!isset($headers["HTTP_TIME"])){
+            Inc::GoUrl('','[{"error":"Time Empty"}]');
+        }
+        $time=$headers["HTTP_TIME"];
+        $t=preg_match('/^\d{9,11}$/',trim($time)) ? (int)trim($time) : strtotime(trim($time));
+        if($t===false || $t<=0 || abs(time()-$t)>300){
+            Inc::GoUrl('','[{"error":"Time Error"}]');
+        }
+        if(!isset($headers["HTTP_NONCE"])){
+            Inc::GoUrl('','[{"error":"Nonce Empty"}]');
+        }
+        $nonce=trim($headers["HTTP_NONCE"]);
+        if(!preg_match('/^[A-Za-z0-9]{8,64}$/',$nonce)){
+            Inc::GoUrl('','[{"error":"Nonce Error"}]');
+        }
+        if(!isset($headers["HTTP_SIGN"])){
+            Inc::GoUrl('','[{"error":"Sign Empty"}]');
+        }
+        $sign=trim($headers["HTTP_SIGN"]);
+        $vsign=md5($appsecret.$t.$nonce);
+        if(!hash_equals($vsign,$sign)){
+            Inc::GoUrl('','[{"error":"Sign Error"}]');
+        }
+        $row=Data::QueryData("cms_api_nonce","id,ip,addtime,usetime","appid=? and nonce=?","","1",array($appid,$nonce));
+        if($row["querynum"]<=0){
+            Inc::GoUrl('','[{"error":"Sign Not Issued"}]');
+        }
+        $nonceRow=$row["querydata"][0];
+        if(!empty($nonceRow["usetime"])){
+            Inc::GoUrl('','[{"error":"Nonce Replayed"}]');
+        }
+        if(strtotime((string)$nonceRow["addtime"])<time()-300){
+            Inc::GoUrl('','[{"error":"Nonce Expired"}]');
+        }
+        if(trim((string)$nonceRow["ip"])!==Inc::GetIp()){
+            Inc::GoUrl('','[{"error":"Nonce IP Error"}]');
+        }
+        Data::RunYu("update `cms_api_nonce` set usetime=? where id=? and usetime is null",array(date('Y-m-d H:i:s'),$nonceRow["id"]));
+        $rc=Data::RunYu("select row_count() as n",array());
+        if((int)($rc["querydata"][0]["n"] ?? 0)!==1){
+            Inc::GoUrl('','[{"error":"Nonce Replayed"}]');
+        }
+        if(mt_rand(1,20)===1){
+            Data::RunYu("delete from `cms_api_nonce` where addtime<?",array(date('Y-m-d H:i:s',time()-600)));
+        }
+    }
+    /**
+     * 票据
+     */
+    private function CheckSecret($headers,$appid){
+        if(!isset($headers["HTTP_SECRET"])){
+            Inc::GoUrl('','[{"error":"Secret Empty"}]');
+        }
+        $secret=trim($headers["HTTP_SECRET"]);
+        if(!preg_match('/^[a-f0-9]{48}$/',$secret)){
+            Inc::GoUrl('','[{"error":"Secret Error"}]');
+        }
+        $data=Data::QueryData("cms_api_secret","id,addtime,usetime,ip,appid","secret=?","","1",array($secret));
+        if($data["querynum"]<=0){
+            Inc::GoUrl('','[{"error":"Secret Error"}]');
+        }
+        $row=$data["querydata"][0];
+        if(!empty($row["usetime"])){
+            Inc::GoUrl('','[{"error":"Secret Used"}]');
+        }
+        if(strtotime($row["addtime"])<time()-300){
+            Inc::GoUrl('','[{"error":"Secret Expired"}]');
+        }
+        if(trim((string)$row["ip"])!==Inc::GetIp()){
+            Inc::GoUrl('','[{"error":"Secret IP Error"}]');
+        }
+        if(trim((string)$row["appid"])!==$appid){
+            Inc::GoUrl('','[{"error":"Secret Appid Error"}]');
+        }
+        return $secret;
     }
     public static function ProtectList(){
         $row=Data::QueryData("cms_api","protect","","","1")["querydata"][0] ?? array();

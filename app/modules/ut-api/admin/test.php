@@ -12,10 +12,10 @@ class Test{
     }
     public function index(){
         $do=empty($_GET["do"]) ? "handle" : $_GET["do"];
-        $app=Data::QueryData("cms_api_app","appid,appsecret","status=1","","1")["querydata"][0] ?? array();
+        $app=Data::QueryData("cms_api_app","appid","status=1","","1")["querydata"][0] ?? array();
         $this->app->Runin(
-            array("do","appid","appsecret","hasapp"),
-            array($do,(string)($app["appid"] ?? ""),(string)($app["appsecret"] ?? ""),empty($app) ? 0 : 1)
+            array("do","appid","hasapp"),
+            array($do,(string)($app["appid"] ?? ""),empty($app) ? 0 : 1)
         );
         $this->app->Open("test.cms");
     }

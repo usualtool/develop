@@ -28,6 +28,7 @@ class App{
                 "appsecret"=>bin2hex(random_bytes(24)),
                 "status"=>1,
                 "bindip"=>"",
+                "signlimit"=>max(1,min(600,intval($_POST["signlimit"] ?? 60))),
                 "remark"=>$remark,
                 "addtime"=>date('Y-m-d H:i:s')
             ));
@@ -37,12 +38,14 @@ class App{
             $id=intval($_POST["id"] ?? 0);
             $status=intval($_POST["status"] ?? 1)==1 ? 1 : 0;
             $bindip=trim((string)($_POST["bindip"] ?? ""));
+            $signlimit=max(1,min(600,intval($_POST["signlimit"] ?? 60)));
             $remark=trim((string)($_POST["remark"] ?? ""));
             Data::UpdateData("cms_api_app",array(
                 "status"=>"?",
                 "bindip"=>"?",
+                "signlimit"=>"?",
                 "remark"=>"?"
-            ),"id=?",array($status,$bindip,$remark,$id));
+            ),"id=?",array($status,$bindip,$signlimit,$remark,$id));
             Inc::GoUrl(Route::Link("ut-api","app"),"应用密钥保存成功!");
         }
         if($do=="regen"){

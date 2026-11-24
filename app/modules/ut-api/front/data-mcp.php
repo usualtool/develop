@@ -12,7 +12,6 @@ class Data_mcp{
         }
         $CONFIG = [
             // MCP 客户端访问令牌（Authorization: Bearer <token> 或 ?token=<token>）
-            // 公网暴露必须设置
             'token'           => md5((string)($config['UTCODE'] ?? '')),
             'allowed_origins' => [],
             'max_body'        => 4194304,
@@ -57,16 +56,35 @@ class Data_mcp{
         register_shutdown_function(static function () {
             $err = error_get_last();
             $fatal = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR];
-            if ($err === null || !in_array($err['type'], $fatal, true)) {
-                return;
-            }
-            error_log('[mcp.php] fatal: ' . $err['message'] . ' @ ' . $err['file'] . ':' . $err['line']);
+            $isFatal = ($err !== null && in_array($err['type'], $fatal, true));
             if ($GLOBALS['__ut_responded']) {
                 return;
             }
+            $buffered = '';
             while (ob_get_level() > 0) {
-                @ob_end_clean();
+                $buffered = (string) ob_get_clean() . $buffered;
             }
+            $buffered = trim($buffered);
+            if (!$isFatal && $buffered !== '') {
+                $decoded = json_decode($buffered, true);
+                $message = (is_array($decoded) && isset($decoded[0]['error'])) ? (string) $decoded[0]['error'] : '';
+                if ($message !== '') {
+                    if (!headers_sent()) {
+                        http_response_code(200);
+                        header('Content-Type: application/json; charset=utf-8');
+                    }
+                    echo json_encode(
+                        ['jsonrpc' => '2.0', 'id' => null, 'error' => ['code' => -32603, 'message' => $message]],
+                        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                    );
+                    $GLOBALS['__ut_responded'] = true;
+                    return;
+                }
+            }
+            if (!$isFatal) {
+                return;
+            }
+            error_log('[mcp.php] fatal: ' . $err['message'] . ' @ ' . $err['file'] . ':' . $err['line']);
             if (!headers_sent()) {
                 http_response_code(500);
                 header('Content-Type: application/json; charset=utf-8');
@@ -256,7 +274,7 @@ class Data_mcp{
                     $utWhy[] = 'UTCODE为空';
                 }
                 if (!class_exists('usualtool\\Lib\\Data')) {
-                    $utWhy[] = 'UTData类未加载';
+                    $utWhy[] = 'Data类未加载';
                 }
                 ut_respond_json(500, [
                     'error' => 'MCP未运行在UT框架环境中',
@@ -318,6 +336,76 @@ class Data_mcp{
             $_SERVER['HTTP_TIME']    = $timeStr;
             $_SERVER['HTTP_TOKEN']   = md5(md5((string) $config['UTCODE']) . (string) strtotime($timeStr));
             $_SERVER['HTTP_REFERER'] = (string) $config['APPURL'];
+            if (!empty($_SERVER['HTTP_APPID']) && !empty($_SERVER['HTTP_NONCE']) && !empty($_SERVER['HTTP_SIGN'])) {
+                return;
+            }
+            if (!class_exists('usualtool\\Lib\\Data') || !class_exists('usualtool\\Lib\\Inc')) {
+                return;
+            }
+            try {
+                $res = \usualtool\Lib\Data::QueryData('cms_api_app', 'appid,appsecret,bindip', 'status=1', '', '50');
+            } catch (\Throwable $e) {
+                error_log('[mcp.php] bridge headers: ' . $e->getMessage());
+                return;
+            }
+            $rows = isset($res['querydata']) && is_array($res['querydata']) ? $res['querydata'] : [];
+            $ip = (string) \usualtool\Lib\Inc::GetIp();
+            foreach ($rows as $row) {
+                $appid = trim((string) ($row['appid'] ?? ''));
+                $secret = trim((string) ($row['appsecret'] ?? ''));
+                if ($appid === '' || $secret === '') {
+                    continue;
+                }
+                $bind = trim((string) ($row['bindip'] ?? ''));
+                if ($bind !== '') {
+                    $ips = array_map('trim', explode(',', $bind));
+                    if (!in_array($ip, $ips, true)) {
+                        continue;
+                    }
+                }
+                $t = time();
+                $nonce = bin2hex(random_bytes(8));
+                $_SERVER['HTTP_APPID'] = $appid;
+                $_SERVER['HTTP_NONCE'] = $nonce;
+                $_SERVER['HTTP_TIME'] = (string) $t;
+                $_SERVER['HTTP_SIGN'] = md5($secret . $t . $nonce);
+                break;
+            }
+        }
+        function ut_ip_whitelist(): bool{
+            $file = dirname(__DIR__, 4) . '/log/mcp-whiteip.log';
+            $ip = class_exists('usualtool\\Lib\\Inc')
+                ? (string) \usualtool\Lib\Inc::GetIp()
+                : (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+            if (!is_file($file)) {
+                @mkdir(dirname($file), 0755, true);
+                @file_put_contents(
+                    $file,
+                    "# MCP 白名单 IP，半角逗号分割（# 开头为注释，可换行书写）\n" . $ip . "\n"
+                );
+            }
+            $raw = (string) @file_get_contents($file);
+            $raw = str_replace(array("\r", "\n"), ',', $raw);
+            $allowed = array();
+            foreach (explode(',', $raw) as $item) {
+                $item = trim($item);
+                if ($item === '' || $item[0] === '#') {
+                    continue;
+                }
+                $allowed[] = $item;
+            }
+            if (in_array($ip, $allowed, true)) {
+                return true;
+            }
+            ut_respond_json(403, [
+                'jsonrpc' => '2.0',
+                'id'      => null,
+                'error'   => [
+                    'code'    => -32002,
+                    'message' => 'IP not allowed: ' . $ip . '（仅 log/mcp-whiteip.log 白名单内的 IP 可访问，格式：半角逗号分割）',
+                ],
+            ]);
+            return false;
         }
         function ut_fetch(array $CONFIG, string $page, string $postData = ''): string{
             $page = trim($page);
@@ -389,34 +477,45 @@ class Data_mcp{
             ];
             $defs[] = [
                 'name'        => 'get_data_query',
-                'description' => '查询框架数据（走 data-query 页面，参数透传给页面，白名单由页面内部校验，只读）。',
+                'description' => '只读查询白名单表。where 用 ? 占位，param 按顺序传值（数量必须相等）；不传 field 返回全部非保护字段。',
                 'inputSchema' => [
                     'type'       => 'object',
                     'properties' => [
-                        'table'  => ['type' => 'string', 'description' => '要查询的表名，须在 cms_api.opentable 白名单内'],
-                        'where'  => ['type' => 'string', 'description' => '查询条件，例如 id=1'],
-                        'fields' => ['type' => 'string', 'description' => '返回字段，逗号分隔（选填，页面支持时生效）'],
-                        'order'  => ['type' => 'string', 'description' => '排序（选填，页面支持时生效）'],
-                        'limit'  => ['type' => 'string', 'description' => '返回条数（选填，页面支持时生效）'],
+                        'table' => ['type'=>'string','description'=>'表名，须在 cms_api.opentable 白名单内'],
+                        'field' => ['type'=>'string','description'=>'返回字段，逗号分隔，例如 id,title'],
+                        'where' => ['type'=>'string','description'=>'条件，占位符用 ?，例如 id=?'],
+                        'param' => ['type'=>'array','items'=>['type'=>'string'],'description'=>'与 where 中 ? 顺序对应的值；where 无 ? 时不要传'],
+                        'order' => ['type'=>'string','description'=>'排序，例如 id desc'],
+                        'limit' => ['type'=>'string','description'=>'条数，写 20 或 0,20，上限 100，默认 0,20'],
                     ],
                     'required'             => ['table'],
-                    'additionalProperties' => true,
+                    'additionalProperties' => false,
+                ],
+            ];
+            $defs[] = [
+                'name'        => 'get_ticket',
+                'description' => '领取一次性写入票据（write_data 的 ticket 参数），5 分钟内有效，绑定当前 IP 与 appid，每分钟限领 5 次',
+                'inputSchema' => [
+                    'type'                 => 'object',
+                    'properties'           => new \stdClass(),
+                    'additionalProperties' => false,
                 ],
             ];
             $defs[] = [
                 'name'        => 'write_data',
-                'description' => '写入一条数据到白名单表：自动剔除保护字段、校验必填字段与字段类型，时间字段由服务端按入库时间填充，图片字段留空，返回新记录 ID。表须在 cms_api.opentable 内。',
+                'description' => '写入一条数据到白名单表：必须先调用 get_ticket 领取一次性票据并作为 ticket 传入；自动剔除保护字段、校验必填字段与字段类型，时间字段由服务端按入库时间填充，图片字段留空，返回新记录 ID，写入会在 cms_api_log 留痕。表须在 cms_api.opentable 内。',
                 'inputSchema' => [
                     'type'       => 'object',
                     'properties' => [
-                        'table' => ['type' => 'string', 'description' => '目标表名，须在 cms_api.opentable 白名单内'],
-                        'data'  => [
+                        'table'  => ['type' => 'string', 'description' => '目标表名，须在 cms_api.opentable 白名单内'],
+                        'data'   => [
                             'type'                 => 'object',
                             'description'          => '要写入的字段键值对，字段名须与表结构一致，未知字段会被忽略',
                             'additionalProperties' => true,
                         ],
+                        'ticket' => ['type' => 'string', 'description' => '一次性写入票据，先调用 get_ticket 领取，5 分钟内有效'],
                     ],
-                    'required'   => ['table', 'data'],
+                    'required'   => ['table', 'data', 'ticket'],
                 ],
             ];
             $defs[] = [
@@ -430,6 +529,56 @@ class Data_mcp{
             ];
             return $defs;
         }
+        function ut_verify_ticket(string $ticket): string{
+            if (!class_exists('usualtool\\Lib\\Data') || !class_exists('usualtool\\Lib\\Inc')) {
+                return '服务依赖不可用';
+            }
+            $appid = trim((string) ($_SERVER['HTTP_APPID'] ?? ''));
+            $ip = (string) \usualtool\Lib\Inc::GetIp();
+            $res = \usualtool\Lib\Data::QueryData('cms_api_secret', 'id,addtime,usetime,ip,appid', 'secret=?', '', '1', array($ticket));
+            if (!isset($res['querynum']) || (int) $res['querynum'] <= 0) {
+                return '票据不存在';
+            }
+            $row = $res['querydata'][0];
+            if (!empty($row['usetime'])) {
+                return '票据已被使用';
+            }
+            if (strtotime((string) $row['addtime']) < time() - 300) {
+                return '票据已过期（5 分钟内有效）';
+            }
+            if (trim((string) $row['ip']) !== $ip) {
+                return '票据 IP 不匹配';
+            }
+            if ($appid === '' || trim((string) $row['appid']) !== $appid) {
+                return '票据 appid 不匹配';
+            }
+            return '';
+        }
+        function ut_consume_ticket(string $ticket): bool{
+            \usualtool\Lib\Data::RunYu(
+                'update `cms_api_secret` set usetime=? where secret=? and usetime is null and addtime>=?',
+                array(date('Y-m-d H:i:s'), $ticket, date('Y-m-d H:i:s', time() - 300))
+            );
+            $rc = \usualtool\Lib\Data::RunYu('select row_count() as n', array());
+            return (int) ($rc['querydata'][0]['n'] ?? 0) === 1;
+        }
+        function ut_log_write(string $ticket, string $table, array $data): void{
+            $detail = json_encode(array('data' => $data), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if (strlen((string) $detail) > 2000) {
+                $detail = function_exists('mb_substr')
+                    ? mb_substr((string) $detail, 0, 600)
+                    : substr((string) $detail, 0, 2000);
+            }
+            \usualtool\Lib\Data::InsertData('cms_api_log', array(
+                'act'     => 'add',
+                'utable'  => $table,
+                'uwhere'  => '',
+                'udata'   => (string) $detail,
+                'usecret' => $ticket,
+                'ip'      => (string) \usualtool\Lib\Inc::GetIp(),
+                'addtime' => date('Y-m-d H:i:s'),
+            ));
+        }
         function ut_text_result(string $text): array{
             return ['content' => [['type' => 'text', 'text' => $text]]];
         }
@@ -441,9 +590,38 @@ class Data_mcp{
                 }
                 return ut_text_result("已支持的数据页面：\n" . implode("\n", $lines));
             }
+            if ($name === 'get_ticket') {
+                return ut_text_result(ut_fetch($CONFIG, 'data-secret'));
+            }
             if ($name === 'write_data') {
-                $table = isset($args['table']) && is_string($args['table']) ? trim($args['table']) : '';
-                $data  = isset($args['data']) && is_array($args['data']) ? $args['data'] : [];
+                $table  = isset($args['table']) && is_string($args['table']) ? trim($args['table']) : '';
+                $data   = isset($args['data']) && is_array($args['data']) ? $args['data'] : [];
+                $ticket = isset($args['ticket']) && is_string($args['ticket']) ? trim($args['ticket']) : '';
+                if ($ticket === '') {
+                    return [
+                        'content' => [['type' => 'text', 'text' => '写入失败：缺少 ticket 参数，请先调用 get_ticket 领取一次性票据（5 分钟内有效）']],
+                        'isError' => true,
+                    ];
+                }
+                if (!preg_match('/^[a-f0-9]{48}$/', $ticket)) {
+                    return [
+                        'content' => [['type' => 'text', 'text' => '写入失败：票据格式错误（应为 48 位十六进制字符串）']],
+                        'isError' => true,
+                    ];
+                }
+                $terr = ut_verify_ticket($ticket);
+                if ($terr !== '') {
+                    return [
+                        'content' => [['type' => 'text', 'text' => '写入失败：' . $terr]],
+                        'isError' => true,
+                    ];
+                }
+                if (!ut_consume_ticket($ticket)) {
+                    return [
+                        'content' => [['type' => 'text', 'text' => '写入失败：票据已被使用，请重新领取']],
+                        'isError' => true,
+                    ];
+                }
                 if (!class_exists('Model\\Ut_api\\Writer')) {
                     throw new \RuntimeException('写入服务未安装：app/modules/ut-api/model/Writer.php');
                 }
@@ -455,6 +633,7 @@ class Data_mcp{
                         'isError' => true,
                     ];
                 }
+                ut_log_write($ticket, $table, $data);
                 return ut_text_result(
                     '已写入 ' . $table . '，ID=' . $saved['id'] . "\n"
                     . json_encode($saved['data'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
@@ -522,7 +701,7 @@ class Data_mcp{
                         'name'    => (string) $CONFIG['server_name'],
                         'version' => (string) $CONFIG['server_version'],
                     ],
-                    'instructions'    => '本服务提供框架数据查询与写入。调用 get_data_work 获取数据概况；查询数据用 get_data_query（table/where）；写入数据用 write_data（table/data，表须在白名单内）；其他页面用 get_page 指定 page 名。',
+                    'instructions'    => '本服务提供框架数据查询与写入。调用 get_data_work 获取数据概况；查询数据用 get_data_query（table/where）；写入数据用 write_data，必须先调用 get_ticket 领取一次性票据作为 ticket 参数（5 分钟内有效），写入会在 cms_api_log 留痕；其他页面用 get_page 指定 page 名。',
                 ]);
             }
             if ($method === 'tools/list') {
@@ -673,6 +852,9 @@ class Data_mcp{
                 if ($ut_msgs === false) {
                     return;
                 }
+            }
+            if (!ut_ip_whitelist()) {
+                return;
             }
             ut_bridge_headers();
             if (!ut_gate($CONFIG)) {

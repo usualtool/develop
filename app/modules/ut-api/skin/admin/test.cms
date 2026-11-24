@@ -31,13 +31,10 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
-                                <p class="border-bottom">应用密钥（在「接口-应用密钥」中管理；sign = md5(appsecret + time + nonce)，nonce 一次一用）</p>
+                                <p class="border-bottom">应用密钥（在「接口-应用密钥」中管理；签名由服务端签发，客户端凭 AppID 领签，一次一用）</p>
                                 <div class="row">
                                     <div class="col-md-5">
                                         <input type="text" class="form-control input-square" id="utappid" value="<{$appid}>" placeholder="AppID">
-                                    </div>
-                                    <div class="col-md-7">
-                                        <input type="text" class="form-control input-square" id="utappsecret" value="<{$appsecret}>" placeholder="AppSecret">
                                     </div>
                                 </div>
                             </div>
@@ -105,22 +102,22 @@
     </div>
 <{include "$pubtemp/foot.cms"}>
 <script>
-    function utnonce(){
-        var s="";
-        var chars="0123456789abcdef";
-        for(var i=0;i<16;i++){s+=chars.charAt(Math.floor(Math.random()*16));}
-        return s;
-    }
-    function utsign(){
-        var appsecret=$("#utappsecret").val()||"";
-        var t=Math.floor(Date.now()/1000);
-        var nonce=utnonce();
-        return {t:t,nonce:nonce,sign:md5(appsecret+t+nonce)};
+    // 领签：签名由服务端签发（data-secret?action=sign），客户端只搬运，一次一用
+    function fetchSign(appid){
+        return $.ajax({
+            url: "<{$appurl}><{url=>Link("ut-api","data-secret","","front")}>&action=sign",
+            type: "post",
+            data: "",
+            contentType: "application/x-www-form-urlencoded",
+            async:false,
+            beforeSend: function(XMLHttpRequest){
+                XMLHttpRequest.setRequestHeader("appid",appid);
+            }
+        });
     }
     function runtest(){
         var appid=$("#utappid").val()||"";
-        var appsecret=$("#utappsecret").val()||"";
-        if(!appid || !appsecret){
+        if(!appid){
             $("#result").html("<code>请先在「应用密钥」中添加并启用应用</code>");
             return;
         }
@@ -155,8 +152,7 @@
             jsonstr="action="+action+"&code="+code;
         <{/if}>
         var posturl="<{$appurl}><{url=>Link("ut-api","data-".$do,"","front")}>";
-        var send=function(secret){
-            var h=utsign();
+        var send=function(h,secret){
             $.ajax({
                 url: posturl,
                 <{if $do=="handle" || $do=="query"}>
@@ -169,10 +165,12 @@
                 contentType: "application/x-www-form-urlencoded",
                 async:false,
                 beforeSend: function(XMLHttpRequest){
-                    XMLHttpRequest.setRequestHeader("appid",appid);
-                    XMLHttpRequest.setRequestHeader("time",h.t);
-                    XMLHttpRequest.setRequestHeader("nonce",h.nonce);
-                    XMLHttpRequest.setRequestHeader("sign",h.sign);
+                    if(h){
+                        XMLHttpRequest.setRequestHeader("appid",appid);
+                        XMLHttpRequest.setRequestHeader("time",h.time);
+                        XMLHttpRequest.setRequestHeader("nonce",h.nonce);
+                        XMLHttpRequest.setRequestHeader("sign",h.sign);
+                    }
                     if(secret){
                         XMLHttpRequest.setRequestHeader("secret",secret);
                     }
@@ -182,8 +180,12 @@
                 }
             });
         };
+        var signres=fetchSign(appid).responseJSON;
+        if(!signres || !signres.sign){
+            $("#result").html("<code>领签失败："+JSON.stringify(signres)+"</code>");
+            return;
+        }
         <{if $do=="handle"}>
-        var h0=utsign();
         $.ajax({
             url: "<{$appurl}><{url=>Link("ut-api","data-secret","","front")}>",
             type: "post",
@@ -192,21 +194,21 @@
             async:false,
             beforeSend: function(XMLHttpRequest){
                 XMLHttpRequest.setRequestHeader("appid",appid);
-                XMLHttpRequest.setRequestHeader("time",h0.t);
-                XMLHttpRequest.setRequestHeader("nonce",h0.nonce);
-                XMLHttpRequest.setRequestHeader("sign",h0.sign);
+                XMLHttpRequest.setRequestHeader("time",signres.time);
+                XMLHttpRequest.setRequestHeader("nonce",signres.nonce);
+                XMLHttpRequest.setRequestHeader("sign",signres.sign);
             },
             success: function(res){
                 var sec=(res && res.secret) ? res.secret : ((res && res[0] && res[0].secret) ? res[0].secret : "");
                 if(sec){
-                    send(sec);
+                    send(null,sec);
                 }else{
                     $("#result").html("<code>"+JSON.stringify(res)+"</code>");
                 }
             }
         });
         <{else}>
-        send("");
+        send(signres,"");
         <{/if}>
     }
 </script>

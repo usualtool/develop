@@ -108,6 +108,7 @@ CREATE TABLE `cms_api_app` (
   `appsecret` varchar(100) NOT NULL,
   `status` int(11) DEFAULT 1,
   `bindip` varchar(200) DEFAULT NULL,
+  `signlimit` int(11) DEFAULT 60,
   `remark` varchar(200) DEFAULT NULL,
   `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -119,9 +120,12 @@ CREATE TABLE `cms_api_nonce` (
   `appid` varchar(100) NOT NULL,
   `nonce` varchar(64) NOT NULL,
   `addtime` datetime DEFAULT NULL,
+  `ip` varchar(100) DEFAULT NULL,
+  `usetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `appid_nonce` (`appid`,`nonce`),
-  KEY `addtime` (`addtime`)
+  KEY `addtime` (`addtime`),
+  KEY `ip_addtime` (`ip`,`addtime`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_api_secret`;
 CREATE TABLE `cms_api_secret` (
@@ -276,6 +280,6 @@ INSERT INTO `cms_module` VALUES (5, 3, 'ut-cac', 'CAC', 'index.php', 1, 94, 1, '
 INSERT INTO `cms_module` VALUES (6, 3, 'ut-system', '配置', 'index.php', 1, 95, 1, '', '', '');
 INSERT INTO `cms_module` VALUES (7, 3, 'ut-data', '数据', 'index.php', 1, 96, 1, '', '', '表管理:index.php,SQL查询:sql.php,备份还原:backup.php');
 INSERT INTO `cms_module` VALUES (8, 3, 'ut-oauth', 'OAuth', 'index.php', 1, 97, 1, '', '', '管理应用:index.php,授权记录:log.php,权限集合:role.php,用户列表:user.php');
-INSERT INTO `cms_module` VALUES (9, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口配置:index.php,应用密钥:app.php,在线调试:test.php,Secret票据:secret.php,通行日志:pass.php');
+INSERT INTO `cms_module` VALUES (9, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口配置:index.php,应用密钥:app.php,票据:secret.php,在线调试:test.php,通行日志:pass.php');
 INSERT INTO `cms_module` VALUES (10, 3, 'ut-ai', 'AI能力', 'index.php', 1, 99, 1, '', '', 'AI配置:index.php,AI任务:task.php,执行日志:log.php');
 INSERT INTO `cms_module` VALUES (11, 3, 'ut-power', '权限', 'index.php', 1, 100, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');

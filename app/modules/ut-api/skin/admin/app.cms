@@ -41,6 +41,7 @@
                                                 <th>AppID<br/>AppSecret</th>
                                                 <th>状态</th>
                                                 <th>绑定IP</th>
+                                                <th>领签限流/分</th>
                                                 <th>备注</th>
                                                 <th>创建时间</th>
                                                 <th>操作</th>
@@ -62,6 +63,7 @@
                                                     </select>
                                                 </td>
                                                 <td><input type="text" class="form-control form-control-sm ut-bindip" value="<{$rows["bindip"]}>" style="min-width:110px;"></td>
+                                                <td><input type="number" min="1" max="600" class="form-control form-control-sm ut-signlimit" value="<{$rows["signlimit"]}>" style="min-width:90px;"></td>
                                                 <td><input type="text" class="form-control form-control-sm ut-remark" value="<{$rows["remark"]}>" style="min-width:110px;"></td>
                                                 <td class="text-nowrap"><{$rows["addtime"]}></td>
                                                 <td class="text-nowrap">
@@ -96,10 +98,14 @@
             <input type="text" class="form-control" name="appid" required>
         </div>
         <div class="form-group">
+            <label>领签限流（次/分钟，1-600）</label>
+            <input type="number" class="form-control" name="signlimit" value="60" min="1" max="600">
+        </div>
+        <div class="form-group">
             <label>备注</label>
             <input type="text" class="form-control" name="remark">
         </div>
-        <p class="mb-0 text-muted">添加后自动生成 48 位 AppSecret，可直接在列表中查看或重置。</p>
+        <p class="mb-0 text-muted">添加后自动生成 48 位 AppSecret。AppSecret 仅存于服务端用于签发签名与写票据，不进入任何客户端；客户端凭 appid 领签调用。</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
@@ -117,6 +123,7 @@ $(function(){
         f.append($('<input type="hidden" name="id">').val(btn.data("id")));
         f.append($('<input type="hidden" name="status">').val(tr.find(".ut-status").val()));
         f.append($('<input type="hidden" name="bindip">').val(tr.find(".ut-bindip").val()));
+        f.append($('<input type="hidden" name="signlimit">').val(tr.find(".ut-signlimit").val()));
         f.append($('<input type="hidden" name="remark">').val(tr.find(".ut-remark").val()));
         $("body").append(f);
         f.submit();
