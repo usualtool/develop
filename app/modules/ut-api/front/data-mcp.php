@@ -74,7 +74,7 @@ class Data_mcp{
                         header('Content-Type: application/json; charset=utf-8');
                     }
                     echo json_encode(
-                        ['jsonrpc' => '2.0', 'id' => null, 'error' => ['code' => -32603, 'message' => $message]],
+                        ['jsonrpc' => '2.0', 'id' => ($GLOBALS['__ut_req_id'] ?? null), 'error' => ['code' => -32603, 'message' => $message]],
                         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
                     );
                     $GLOBALS['__ut_responded'] = true;
@@ -84,13 +84,13 @@ class Data_mcp{
             if (!$isFatal) {
                 return;
             }
-            error_log('[mcp.php] fatal: ' . $err['message'] . ' @ ' . $err['file'] . ':' . $err['line']);
+            error_log('[UT-MCP] fatal: ' . $err['message'] . ' @ ' . $err['file'] . ':' . $err['line']);
             if (!headers_sent()) {
                 http_response_code(500);
                 header('Content-Type: application/json; charset=utf-8');
             }
             echo json_encode(
-                ['jsonrpc' => '2.0', 'id' => null, 'error' => ['code' => -32603, 'message' => 'PHP fatal: ' . $err['message']]],
+                ['jsonrpc' => '2.0', 'id' => ($GLOBALS['__ut_req_id'] ?? null), 'error' => ['code' => -32603, 'message' => 'PHP fatal: ' . $err['message']]],
                 JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
             );
             $GLOBALS['__ut_responded'] = true;
@@ -330,23 +330,23 @@ class Data_mcp{
             }
             return ut_is_list($parsed) ? $parsed : [$parsed];
         }
-        function ut_bridge_headers(): void{
-            global $config;
-            $timeStr = date('Y-m-d H:i:s');
-            $_SERVER['HTTP_TIME']    = $timeStr;
-            $_SERVER['HTTP_TOKEN']   = md5(md5((string) $config['UTCODE']) . (string) strtotime($timeStr));
-            $_SERVER['HTTP_REFERER'] = (string) $config['APPURL'];
-            if (!empty($_SERVER['HTTP_APPID']) && !empty($_SERVER['HTTP_NONCE']) && !empty($_SERVER['HTTP_SIGN'])) {
-                return;
-            }
+        function ut_sign_headers(): void{
             if (!class_exists('usualtool\\Lib\\Data') || !class_exists('usualtool\\Lib\\Inc')) {
                 return;
             }
             try {
-                $res = \usualtool\Lib\Data::QueryData('cms_api_app', 'appid,appsecret,bindip', 'status=1', '', '50');
+                $res = \usualtool\Lib\Data::QueryData('cms_api_app', 'appid,appsecret,bindip', 'appid=? and status=1', '', '1', array('mcp'));
             } catch (\Throwable $e) {
-                error_log('[mcp.php] bridge headers: ' . $e->getMessage());
+                error_log('[UT-MCP] sign headers: ' . $e->getMessage());
                 return;
+            }
+            if (!isset($res['querydata']) || !is_array($res['querydata']) || count($res['querydata']) === 0) {
+                try {
+                    $res = \usualtool\Lib\Data::QueryData('cms_api_app', 'appid,appsecret,bindip', 'status=1', '', '50');
+                } catch (\Throwable $e) {
+                    error_log('[UT-MCP] sign headers: ' . $e->getMessage());
+                    return;
+                }
             }
             $rows = isset($res['querydata']) && is_array($res['querydata']) ? $res['querydata'] : [];
             $ip = (string) \usualtool\Lib\Inc::GetIp();
@@ -365,12 +365,33 @@ class Data_mcp{
                 }
                 $t = time();
                 $nonce = bin2hex(random_bytes(8));
+                $issued = \usualtool\Lib\Data::InsertData('cms_api_nonce', array(
+                    'appid'  => $appid,
+                    'nonce'  => $nonce,
+                    'addtime' => date('Y-m-d H:i:s', $t),
+                    'ip'     => $ip,
+                    'usetime' => null,
+                ));
+                if (!$issued) {
+                    continue;
+                }
                 $_SERVER['HTTP_APPID'] = $appid;
                 $_SERVER['HTTP_NONCE'] = $nonce;
                 $_SERVER['HTTP_TIME'] = (string) $t;
                 $_SERVER['HTTP_SIGN'] = md5($secret . $t . $nonce);
-                break;
+                return;
             }
+        }
+        function ut_bridge_headers(): void{
+            global $config;
+            $timeStr = date('Y-m-d H:i:s');
+            $_SERVER['HTTP_TIME']    = $timeStr;
+            $_SERVER['HTTP_TOKEN']   = md5(md5((string) $config['UTCODE']) . (string) strtotime($timeStr));
+            $_SERVER['HTTP_REFERER'] = (string) $config['APPURL'];
+            if (!empty($_SERVER['HTTP_APPID']) && !empty($_SERVER['HTTP_NONCE']) && !empty($_SERVER['HTTP_SIGN'])) {
+                return;
+            }
+            ut_sign_headers();
         }
         function ut_ip_whitelist(): bool{
             $file = dirname(__DIR__, 4) . '/log/mcp-whiteip.log';
@@ -420,6 +441,7 @@ class Data_mcp{
                 throw new \RuntimeException('页面不存在: ' . $page . '（front 目录可用: ' . implode('、', ut_front_pages()) . '）');
             }
             global $config;
+            ut_sign_headers();
             $depth = ob_get_level();
             ob_start();
             try {
@@ -687,6 +709,9 @@ class Data_mcp{
             $id     = array_key_exists('id', $msg) ? $msg['id'] : null;
             $params = isset($msg['params']) && is_array($msg['params']) ? $msg['params'] : [];
             $isRequest = ($id !== null);
+            if ($isRequest) {
+                $GLOBALS['__ut_req_id'] = $id;
+            }
             if ($method === '') {
                 return $isRequest ? ut_rpc_error($id, -32600, 'Invalid Request: missing method') : null;
             }
@@ -713,7 +738,7 @@ class Data_mcp{
                 try {
                     return ut_rpc_result($id, ut_call_tool($CONFIG, $name, $args));
                 } catch (\Throwable $e) {
-                    error_log('[mcp.php] tool ' . $name . ' failed: ' . $e->getMessage());
+                    error_log('[UT-MCP] tool ' . $name . ' failed: ' . $e->getMessage());
                     return ut_rpc_result($id, [
                         'content' => [['type' => 'text', 'text' => '工具执行出错: ' . $e->getMessage()]],
                         'isError' => true,
@@ -862,9 +887,9 @@ class Data_mcp{
             }
             ut_route($CONFIG, $ut_msgs);
         } catch (\Throwable $e) {
-            error_log('[mcp.php] unhandled: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+            error_log('[UT-MCP] unhandled: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
             if (!$GLOBALS['__ut_responded']) {
-                ut_respond_json(500, ['jsonrpc' => '2.0', 'id' => null, 'error' => ['code' => -32603, 'message' => 'Internal error: ' . $e->getMessage()]]);
+                ut_respond_json(500, ['jsonrpc' => '2.0', 'id' => ($GLOBALS['__ut_req_id'] ?? null), 'error' => ['code' => -32603, 'message' => 'Internal error: ' . $e->getMessage()]]);
             }
         }
     }
